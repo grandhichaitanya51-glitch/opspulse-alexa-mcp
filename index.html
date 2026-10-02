@@ -4,46 +4,53 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpsPulse for Alexa+ | Autonomous SRE Voice Cockpit</title>
+  
+  <!-- Modern Typography: Inter Display + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
     /* ==========================================================================
-       Design System & Variables (Alexa Modern Dark Identity)
+       Design System & Variables (Cyber-Command Alexa Dark Identity)
        ========================================================================== */
     :root {
-      --bg-base: #07090e;
-      --bg-surface: #0e131f;
-      --bg-surface-elevated: #141b2d;
-      --bg-card: rgba(18, 26, 44, 0.72);
-      --bg-card-hover: rgba(26, 38, 64, 0.88);
+      --bg-base: #06080e;
+      --bg-surface: #0b101c;
+      --bg-surface-elevated: #101728;
+      --bg-card: rgba(16, 23, 40, 0.72);
+      --bg-card-hover: rgba(23, 33, 56, 0.85);
       --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-active: rgba(0, 202, 255, 0.45);
+      --border-medium: rgba(255, 255, 255, 0.14);
+      --border-active: rgba(0, 202, 255, 0.55);
       
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
       
-      /* Alexa Brand Palette */
+      /* Alexa Brand & Dynamic Spectrum */
       --alexa-cyan: #00caff;
-      --alexa-cyan-glow: rgba(0, 202, 255, 0.35);
-      --alexa-blue: #0077b6;
-      --alexa-indigo: #4f46e5;
-      --alexa-purple: #9333ea;
+      --alexa-cyan-glow: rgba(0, 202, 255, 0.4);
+      --alexa-cyan-soft: rgba(0, 202, 255, 0.12);
+      --alexa-blue: #0284c7;
+      --alexa-indigo: #6366f1;
+      --alexa-purple: #a855f7;
       
-      /* Status Colors */
+      /* Status Palette */
       --status-emerald: #10b981;
-      --status-emerald-glow: rgba(16, 185, 129, 0.3);
+      --status-emerald-glow: rgba(16, 185, 129, 0.35);
       --status-amber: #f59e0b;
-      --status-amber-glow: rgba(245, 158, 11, 0.3);
+      --status-amber-glow: rgba(245, 158, 11, 0.35);
       --status-crimson: #ef4444;
-      --status-crimson-glow: rgba(239, 68, 68, 0.3);
+      --status-crimson-glow: rgba(239, 68, 68, 0.4);
       
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
       --radius-pill: 9999px;
+      
+      --shadow-card: 0 12px 36px 0 rgba(0, 0, 0, 0.52), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+      --shadow-glow: 0 0 24px rgba(0, 202, 255, 0.3);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --transition: all 0.24s var(--ease-out);
     }
@@ -57,32 +64,49 @@
     body {
       background-color: var(--bg-base);
       background-image: 
-        radial-gradient(circle at 10% 20%, rgba(0, 202, 255, 0.07) 0%, transparent 45%),
-        radial-gradient(circle at 90% 80%, rgba(79, 70, 229, 0.07) 0%, transparent 45%),
-        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+        radial-gradient(circle at 15% 15%, rgba(0, 202, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
       color: var(--text-main);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius-pill);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--alexa-cyan);
     }
 
     /* ==========================================================================
-       Header & Real-Time Status Bar
+       Header & Real-Time Mission Bar
        ========================================================================== */
     header {
       height: 74px;
-      padding: 0 32px;
+      padding: 0 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border-subtle);
-      background: rgba(7, 9, 14, 0.88);
-      backdrop-filter: blur(20px);
+      background: rgba(6, 8, 14, 0.84);
+      backdrop-filter: blur(28px);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -92,29 +116,37 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      text-decoration: none;
+      color: inherit;
     }
 
     .brand-logo {
       width: 44px;
       height: 44px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #00caff 0%, #0077b6 50%, #4f46e5 100%);
+      background: linear-gradient(135deg, #00caff 0%, #0077b6 50%, #6366f1 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 25px var(--alexa-cyan-glow);
+      box-shadow: 0 0 28px var(--alexa-cyan-glow);
       position: relative;
+      animation: logoGlow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoGlow {
+      0% { box-shadow: 0 0 16px rgba(0, 202, 255, 0.3); }
+      100% { box-shadow: 0 0 32px rgba(99, 102, 241, 0.55); }
     }
 
     .brand-logo svg {
       width: 24px;
       height: 24px;
       fill: #ffffff;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
     }
 
     .brand-text h1 {
-      font-size: 1.22rem;
+      font-size: 1.24rem;
       font-weight: 800;
       letter-spacing: -0.025em;
       display: flex;
@@ -129,16 +161,19 @@
       text-transform: uppercase;
       padding: 3px 9px;
       border-radius: var(--radius-pill);
-      background: linear-gradient(135deg, rgba(0, 202, 255, 0.2) 0%, rgba(79, 70, 229, 0.25) 100%);
+      background: linear-gradient(135deg, rgba(0, 202, 255, 0.22) 0%, rgba(99, 102, 241, 0.28) 100%);
       color: #38bdf8;
       border: 1px solid rgba(0, 202, 255, 0.45);
-      box-shadow: 0 0 12px rgba(0, 202, 255, 0.2);
+      box-shadow: 0 0 14px rgba(0, 202, 255, 0.25);
     }
 
     .brand-sub {
       font-size: 0.8rem;
       color: var(--text-muted);
       margin-top: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .header-pills {
@@ -151,19 +186,23 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 14px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
       border-radius: var(--radius-pill);
-      font-size: 0.8rem;
-      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      font-weight: 500;
       color: var(--text-muted);
       transition: var(--transition);
     }
 
-    .pill.interactive:hover {
-      border-color: var(--border-active);
+    .pill.interactive {
       cursor: pointer;
+    }
+    .pill.interactive:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: var(--border-medium);
+      color: var(--text-main);
     }
 
     .status-dot {
@@ -171,414 +210,556 @@
       height: 8px;
       border-radius: 50%;
       background: var(--status-emerald);
-      box-shadow: 0 0 8px var(--status-emerald);
-      animation: pulseGlow 2s infinite;
+      box-shadow: 0 0 10px var(--status-emerald);
+      transition: var(--transition);
+      animation: pulseGreen 2.5s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.9); }
     }
 
     .status-dot.offline {
       background: var(--status-amber);
-      box-shadow: 0 0 8px var(--status-amber);
+      box-shadow: 0 0 10px var(--status-amber);
+      animation: none;
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
+    /* Command Palette Button */
+    .cmd-palette-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 202, 255, 0.08);
+      border: 1px solid rgba(0, 202, 255, 0.3);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      color: #38bdf8;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .cmd-palette-btn:hover {
+      background: rgba(0, 202, 255, 0.16);
+      box-shadow: 0 0 16px rgba(0, 202, 255, 0.25);
+    }
+    .cmd-key-badge {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
     }
 
-    /* Simulation Mode Toggle */
+    /* Sound FX Toggle Button */
+    .btn-audio-sfx {
+      background: none;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-audio-sfx:hover {
+      border-color: var(--alexa-cyan);
+      color: var(--alexa-cyan);
+      background: var(--alexa-cyan-soft);
+    }
+    .btn-audio-sfx.muted {
+      color: var(--text-dim);
+      opacity: 0.6;
+    }
+
+    /* Toggle Switch */
     .toggle-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 5px 12px;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border-subtle);
+      cursor: pointer;
       font-size: 0.78rem;
       color: var(--text-muted);
-      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      transition: var(--transition);
+    }
+    .toggle-wrap:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
     }
 
     .toggle-switch {
-      width: 34px;
-      height: 18px;
-      background: #1e293b;
+      width: 36px;
+      height: 20px;
       border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.15);
       position: relative;
       transition: var(--transition);
     }
-
     .toggle-switch.active {
       background: var(--alexa-cyan);
+      box-shadow: 0 0 12px var(--alexa-cyan-glow);
     }
-
     .toggle-thumb {
       width: 14px;
       height: 14px;
-      background: #fff;
       border-radius: 50%;
+      background: #ffffff;
       position: absolute;
-      top: 2px;
-      left: 2px;
+      top: 3px;
+      left: 3px;
       transition: var(--transition);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
-
     .toggle-switch.active .toggle-thumb {
-      left: 18px;
-      background: #000;
+      transform: translateX(16px);
     }
 
     /* ==========================================================================
-       App Layout: Split Cockpit Architecture
+       Service Fleet Mesh Strip (Live Microservices Status Ribbon)
+       ========================================================================== */
+    .fleet-strip {
+      padding: 10px 28px;
+      background: rgba(11, 16, 28, 0.75);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      overflow-x: auto;
+      backdrop-filter: blur(16px);
+    }
+
+    .fleet-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .fleet-cards-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      overflow-x: auto;
+    }
+
+    .fleet-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: rgba(16, 23, 40, 0.6);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.74rem;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      user-select: none;
+    }
+    .fleet-chip:hover {
+      background: rgba(23, 33, 56, 0.9);
+      border-color: var(--border-active);
+      transform: translateY(-1px);
+    }
+    .fleet-chip.degraded {
+      border-color: rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.08);
+    }
+    .fleet-chip.degraded .chip-dot {
+      background: var(--status-crimson);
+      box-shadow: 0 0 8px var(--status-crimson);
+      animation: pulseRed 1.8s infinite;
+    }
+    @keyframes pulseRed {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--status-emerald);
+      box-shadow: 0 0 6px var(--status-emerald);
+    }
+    .chip-name {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .chip-metric {
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+    }
+
+    .mission-clock {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .mission-clock strong {
+      color: #94a3b8;
+    }
+
+    /* ==========================================================================
+       Main Cockpit View Grid
        ========================================================================== */
     main {
       flex: 1;
-      max-width: 1600px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 32px 32px;
+      padding: 24px 28px;
       display: grid;
-      grid-template-columns: 480px 1fr;
-      gap: 28px;
-      height: calc(100vh - 74px);
+      grid-template-columns: 460px 1fr;
+      gap: 24px;
+      max-width: 1780px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1180px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-card);
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ==========================================================================
-       Left Column: Alexa+ Voice Center & Prompt Engine
+       Column 1: Alexa+ Voice Center & Orb Stage
        ========================================================================== */
     .voice-console {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      height: 100%;
-      overflow-y: auto;
-      padding-right: 4px;
     }
 
-    .voice-console::-webkit-scrollbar {
-      width: 5px;
-    }
-    .voice-console::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      backdrop-filter: blur(16px);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+    .orb-stage {
+      padding: 34px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       position: relative;
+      background: radial-gradient(circle at 50% 50%, rgba(0, 202, 255, 0.05) 0%, transparent 70%);
+      border-bottom: 1px solid var(--border-subtle);
       overflow: hidden;
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0, 202, 255, 0.3), transparent);
-    }
-
-    /* Alexa Orb Canvas & Container */
-    .orb-stage {
-      padding: 34px 20px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      position: relative;
-    }
-
+    /* Glowing Backdrop for Orb */
     .orb-glow-backdrop {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -55%);
-      width: 240px;
-      height: 240px;
+      width: 280px;
+      height: 280px;
       border-radius: 50%;
-      background: radial-gradient(circle, var(--alexa-cyan-glow) 0%, transparent 70%);
-      filter: blur(28px);
+      background: radial-gradient(circle, var(--alexa-cyan-glow) 0%, transparent 68%);
+      filter: blur(36px);
+      opacity: 0.45;
+      transition: all 0.8s ease;
       pointer-events: none;
-      transition: var(--transition);
     }
 
+    /* Dynamic Orb States */
     .alexa-orb-wrapper {
+      width: 164px;
+      height: 164px;
+      border-radius: 50%;
       position: relative;
-      width: 140px;
-      height: 140px;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: transform 0.4s var(--ease-out);
+      transition: all 0.4s var(--ease-out);
+      user-select: none;
     }
-
     .alexa-orb-wrapper:hover {
       transform: scale(1.04);
     }
+    .alexa-orb-wrapper:active {
+      transform: scale(0.98);
+    }
 
-    /* Outer Ring */
+    /* Atmospheric Outer Ring */
     .alexa-outer-ring {
       position: absolute;
-      inset: 0;
+      inset: -12px;
       border-radius: 50%;
-      background: conic-gradient(from 0deg, #00caff, #0077b6, #4f46e5, #9333ea, #00caff);
-      box-shadow: 0 0 35px var(--alexa-cyan-glow);
-      transition: var(--transition);
-      animation: rotateRing 6s linear infinite;
+      border: 1px dashed rgba(0, 202, 255, 0.35);
+      animation: rotateRing 24s linear infinite;
     }
-
-    /* Acoustic Wave Bars */
-    .acoustic-wave-container {
-      position: absolute;
-      inset: -14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .wave-bar {
-      width: 3px;
-      height: 20px;
-      border-radius: 3px;
-      background: var(--alexa-cyan);
-      box-shadow: 0 0 8px var(--alexa-cyan);
-    }
-
-    /* Inner Sphere */
-    .alexa-inner-sphere {
-      position: absolute;
-      inset: 8px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #1e293b 0%, #0a0f1d 75%, #05070c 100%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 2;
-      box-shadow: inset 0 2px 12px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.8);
-    }
-
-    .alexa-orb-icon {
-      width: 42px;
-      height: 42px;
-      fill: var(--alexa-cyan);
-      filter: drop-shadow(0 0 10px var(--alexa-cyan-glow));
-      transition: var(--transition);
-    }
-
-    .alexa-state-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--alexa-cyan);
-      margin-top: 4px;
-      opacity: 0.9;
-    }
-
-    /* Orb Animations per State */
-    /* 1. IDLE */
-    .orb-state-idle .alexa-outer-ring {
-      animation: rotateRing 8s linear infinite, idleBreathe 3.5s ease-in-out infinite;
-    }
-
-    /* 2. LISTENING */
-    .orb-state-listening .alexa-outer-ring {
-      animation: rotateRing 1.8s linear infinite;
-      box-shadow: 0 0 50px rgba(0, 202, 255, 0.7);
-    }
-    .orb-state-listening .alexa-orb-icon {
-      fill: #ffffff;
-      transform: scale(1.15);
-    }
-    .orb-state-listening .acoustic-wave-container {
-      opacity: 1;
-    }
-    .orb-state-listening .wave-bar {
-      animation: acousticDance 0.5s ease-in-out infinite alternate;
-    }
-
-    /* 3. THINKING (MCP Execution) */
-    .orb-state-thinking .alexa-outer-ring {
-      animation: rotateRing 0.8s linear infinite;
-      background: conic-gradient(from 0deg, #9333ea, #00caff, #f59e0b, #9333ea);
-      box-shadow: 0 0 50px rgba(147, 51, 234, 0.6);
-    }
-
-    /* 4. SPEAKING */
-    .orb-state-speaking .alexa-outer-ring {
-      animation: rotateRing 3s linear infinite;
-      box-shadow: 0 0 60px rgba(0, 202, 255, 0.8);
-    }
-    .orb-state-speaking .acoustic-wave-container {
-      opacity: 1;
-    }
-    .orb-state-speaking .wave-bar {
-      animation: acousticDance 0.35s ease-in-out infinite alternate;
-    }
-
-    /* 5. ANTIGRAVITY (Easter Egg) */
-    .orb-state-antigravity {
-      animation: levitateOrb 2.5s ease-in-out infinite;
-    }
-    .orb-state-antigravity .alexa-outer-ring {
-      background: conic-gradient(from 0deg, #10b981, #00caff, #ec4899, #10b981);
-      box-shadow: 0 0 60px rgba(16, 185, 129, 0.8);
-      animation: rotateRing 1s linear infinite;
-    }
-
     @keyframes rotateRing {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
 
-    @keyframes idleBreathe {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--alexa-cyan-glow); }
-      50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(0, 202, 255, 0.55); }
-    }
-
-    @keyframes acousticDance {
-      0% { height: 10px; opacity: 0.3; }
-      100% { height: 42px; opacity: 1; }
-    }
-
-    @keyframes levitateOrb {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-24px) rotate(8deg); }
-    }
-
-    /* Verbal Transcript Box */
-    .live-transcript-wrap {
-      width: 100%;
-      min-height: 58px;
+    .alexa-inner-sphere {
+      width: 136px;
+      height: 136px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #00caff 0%, #0077b6 45%, #060914 90%);
+      box-shadow: 
+        inset 0 0 25px rgba(255, 255, 255, 0.6),
+        0 0 35px var(--alexa-cyan-glow);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      position: relative;
+      z-index: 2;
+      transition: all 0.5s ease;
     }
 
+    .alexa-orb-icon {
+      width: 38px;
+      height: 38px;
+      fill: #ffffff;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+      transition: all 0.3s ease;
+    }
+
+    .alexa-state-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 6px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    }
+
+    /* Acoustic Waveforms Container */
+    .acoustic-wave-container {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 48px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 3;
+    }
+    .wave-bar {
+      width: 4px;
+      height: 12px;
+      border-radius: var(--radius-pill);
+      background: #ffffff;
+      box-shadow: 0 0 8px #ffffff;
+    }
+
+    /* Orb State: LISTENING */
+    .orb-state-listening .alexa-inner-sphere {
+      background: radial-gradient(circle at 35% 30%, #38bdf8 0%, #0284c7 45%, #0369a1 90%);
+      box-shadow: 
+        inset 0 0 35px rgba(255, 255, 255, 0.8),
+        0 0 55px rgba(56, 189, 248, 0.8);
+      animation: orbListenPulse 1.2s infinite alternate;
+    }
+    .orb-state-listening .acoustic-wave-container {
+      opacity: 1;
+    }
+    .orb-state-listening .alexa-orb-icon {
+      opacity: 0;
+    }
+    .orb-state-listening .wave-bar {
+      animation: waveBounce 0.8s ease-in-out infinite alternate;
+    }
+    @keyframes orbListenPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+    @keyframes waveBounce {
+      0% { height: 8px; }
+      100% { height: 42px; }
+    }
+
+    /* Orb State: THINKING */
+    .orb-state-thinking .alexa-inner-sphere {
+      background: radial-gradient(circle at 35% 30%, #a855f7 0%, #6366f1 45%, #1e1b4b 90%);
+      box-shadow: 
+        inset 0 0 30px rgba(255, 255, 255, 0.7),
+        0 0 45px rgba(168, 85, 247, 0.65);
+      animation: orbThinkingRotate 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes orbThinkingRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Orb State: SPEAKING */
+    .orb-state-speaking .alexa-inner-sphere {
+      background: radial-gradient(circle at 35% 30%, #34d399 0%, #059669 45%, #064e3b 90%);
+      box-shadow: 
+        inset 0 0 30px rgba(255, 255, 255, 0.7),
+        0 0 45px rgba(52, 211, 153, 0.7);
+      animation: orbSpeakBounce 0.6s infinite alternate;
+    }
+    .orb-state-speaking .acoustic-wave-container {
+      opacity: 1;
+    }
+    .orb-state-speaking .alexa-orb-icon {
+      opacity: 0;
+    }
+    .orb-state-speaking .wave-bar {
+      animation: waveBounce 0.5s ease-in-out infinite alternate;
+      background: #ecfdf5;
+    }
+    @keyframes orbSpeakBounce {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.06); }
+    }
+
+    /* Orb State: ANTIGRAVITY EASTER EGG */
+    .orb-state-antigravity .alexa-inner-sphere {
+      background: radial-gradient(circle at 35% 30%, #ec4899 0%, #8b5cf6 45%, #06b6d4 90%);
+      box-shadow: 
+        0 0 60px rgba(236, 72, 153, 0.85),
+        0 0 100px rgba(139, 92, 246, 0.6);
+      animation: orbLevitate 3s ease-in-out infinite alternate, orbThinkingRotate 6s linear infinite;
+    }
+    @keyframes orbLevitate {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-16px); }
+    }
+
+    /* Dynamic Transcript Bubble */
+    .live-transcript-wrap {
+      margin-top: 22px;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
     .transcript-bubble {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 500;
-      color: #e2e8f0;
-      line-height: 1.5;
-      max-width: 90%;
+      color: var(--text-main);
+      line-height: 1.45;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
       transition: var(--transition);
     }
-
     .transcript-hint {
       font-size: 0.74rem;
       color: var(--text-dim);
+      margin-top: 8px;
     }
 
-    /* Interaction Input Bar */
+    /* Input Dock */
     .input-dock {
-      padding: 0 20px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
     }
-
     .input-field-group {
-      position: relative;
       display: flex;
       align-items: center;
+      background: rgba(8, 12, 22, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 4px 6px 4px 14px;
+      transition: var(--transition);
     }
-
+    .input-field-group:focus-within {
+      border-color: var(--alexa-cyan);
+      box-shadow: 0 0 18px rgba(0, 202, 255, 0.25);
+    }
     .voice-dictation-btn {
-      position: absolute;
-      left: 10px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(0, 202, 255, 0.12);
-      border: 1px solid rgba(0, 202, 255, 0.3);
-      color: var(--alexa-cyan);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
       transition: var(--transition);
-      z-index: 5;
     }
-
     .voice-dictation-btn:hover {
-      background: var(--alexa-cyan);
-      color: #000;
-      transform: scale(1.08);
-      box-shadow: 0 0 16px var(--alexa-cyan-glow);
+      color: var(--alexa-cyan);
+      background: var(--alexa-cyan-soft);
     }
-
     .voice-dictation-btn.recording {
-      background: var(--status-crimson);
-      color: #fff;
-      border-color: var(--status-crimson);
-      animation: pulseGlow 1s infinite;
+      color: #ef4444;
+      animation: micPulse 1.2s infinite alternate;
+    }
+    @keyframes micPulse {
+      0% { transform: scale(1); filter: drop-shadow(0 0 4px #ef4444); }
+      100% { transform: scale(1.18); filter: drop-shadow(0 0 12px #ef4444); }
     }
 
     .query-input {
-      width: 100%;
-      height: 52px;
-      padding: 0 54px 0 54px;
-      background: rgba(8, 12, 20, 0.8);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      flex: 1;
+      background: transparent;
+      border: none;
       color: var(--text-main);
-      font-size: 0.92rem;
-      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 8px 10px;
       outline: none;
-      transition: var(--transition);
+      font-family: inherit;
     }
-
-    .query-input:focus {
-      border-color: var(--alexa-cyan);
-      background: rgba(10, 16, 28, 0.95);
-      box-shadow: 0 0 20px var(--alexa-cyan-glow);
+    .query-input::placeholder {
+      color: var(--text-dim);
     }
 
     .send-action-btn {
-      position: absolute;
-      right: 10px;
       width: 36px;
       height: 36px;
-      border-radius: var(--radius-sm);
-      background: var(--alexa-cyan);
-      color: #000;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--alexa-cyan) 0%, var(--alexa-blue) 100%);
       border: none;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      box-shadow: 0 0 14px var(--alexa-cyan-glow);
       transition: var(--transition);
     }
-
     .send-action-btn:hover {
-      background: #38bdf8;
       transform: scale(1.06);
+      box-shadow: 0 0 20px var(--alexa-cyan-glow);
     }
 
-    /* Quick Prompt Chips */
+    /* Prompt Chips */
     .chips-dock {
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 0 20px 20px;
+      gap: 10px;
     }
-
     .chips-label {
       font-size: 0.72rem;
       font-weight: 700;
@@ -586,270 +767,308 @@
       text-transform: uppercase;
       color: var(--text-dim);
     }
-
     .chips-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-
     .prompt-chip {
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      font-size: 0.8rem;
-      color: #cbd5e1;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 9px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
       cursor: pointer;
       transition: var(--transition);
+      user-select: none;
     }
-
     .prompt-chip:hover {
-      background: rgba(0, 202, 255, 0.09);
-      border-color: var(--alexa-cyan);
-      color: var(--alexa-cyan);
+      background: rgba(0, 202, 255, 0.08);
+      border-color: rgba(0, 202, 255, 0.4);
+      color: var(--text-main);
       transform: translateX(4px);
     }
-
     .chip-badge {
-      font-size: 0.66rem;
+      font-size: 0.68rem;
       font-family: 'JetBrains Mono', monospace;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 2px 7px;
+      border-radius: 6px;
       background: rgba(255, 255, 255, 0.06);
-      color: var(--text-dim);
+      color: var(--text-muted);
     }
 
-    .prompt-chip:hover .chip-badge {
-      background: rgba(0, 202, 255, 0.2);
-      color: #38bdf8;
-    }
-
-    /* Voice Audio Toggle Footer */
+    /* Voice Synthesis Settings Bar */
     .voice-audio-settings {
-      padding: 14px 20px;
+      padding: 12px 20px;
       background: rgba(0, 0, 0, 0.2);
       border-top: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
     }
 
     /* ==========================================================================
-       Right Column: Live Inspection & Protocol Telemetry Deck
+       Column 2: Live Inspection & Protocol Telemetry Deck
        ========================================================================== */
     .inspector-deck {
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      height: 100%;
+      height: calc(100vh - 170px);
+      min-height: 680px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-card);
       overflow: hidden;
     }
 
-    /* Deck Tabs */
+    /* Deck Header & Navigation */
     .deck-nav {
+      height: 56px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 12px;
+      background: rgba(8, 12, 20, 0.85);
     }
 
     .tab-pills {
-      display: flex;
-      gap: 8px;
-    }
-
-    .tab-btn {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-pill);
-      padding: 8px 18px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: var(--transition);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .tab-btn:hover {
-      color: #fff;
-      border-color: var(--border-active);
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
     }
-
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
     .tab-btn.active {
-      background: linear-gradient(135deg, rgba(0, 202, 255, 0.16) 0%, rgba(79, 70, 229, 0.2) 100%);
-      color: var(--alexa-cyan);
-      border-color: var(--alexa-cyan);
-      box-shadow: 0 0 16px rgba(0, 202, 255, 0.2);
+      background: rgba(0, 202, 255, 0.12);
+      border-color: rgba(0, 202, 255, 0.4);
+      color: #38bdf8;
     }
 
     .tab-indicator-count {
-      background: rgba(0, 202, 255, 0.2);
-      color: var(--alexa-cyan);
-      font-size: 0.68rem;
-      font-family: 'JetBrains Mono', monospace;
       padding: 1px 6px;
       border-radius: 9999px;
+      font-size: 0.68rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
     }
 
-    /* Tab Content Containers */
+    .btn-copy {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+    .btn-copy:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+
+    /* Tab Viewport */
     .tab-viewport {
       flex: 1;
+      position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
     .view-pane {
+      position: absolute;
+      inset: 0;
       display: none;
-      flex: 1;
-      height: 100%;
-      overflow-y: auto;
-      padding-right: 6px;
+      flex-direction: column;
+      overflow: hidden;
     }
-
     .view-pane.active {
       display: flex;
-      flex-direction: column;
-      gap: 16px;
     }
 
-    .view-pane::-webkit-scrollbar {
-      width: 5px;
-    }
-    .view-pane::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    /* Conversation Stream View */
+    /* PANE 1: Conversational Chat Stream */
     .chat-bubble-stream {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      padding-bottom: 24px;
+      gap: 18px;
     }
 
     .chat-msg {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      max-width: 90%;
-      animation: fadeInSlide 0.3s var(--ease-out);
+      max-width: 88%;
+      animation: msgFadeIn 0.3s var(--ease-out);
+    }
+    @keyframes msgFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .chat-msg.user {
       align-self: flex-end;
     }
-
     .chat-msg.alexa {
       align-self: flex-start;
-      max-width: 96%;
     }
 
     .msg-header {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 5px;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.74rem;
-      color: var(--text-dim);
     }
 
     .msg-bubble {
       padding: 14px 18px;
-      border-radius: var(--radius-md);
+      border-radius: 16px;
       font-size: 0.88rem;
-      line-height: 1.6;
+      line-height: 1.55;
+      position: relative;
     }
 
     .chat-msg.user .msg-bubble {
-      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-      color: #fff;
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.28) 0%, rgba(99, 102, 241, 0.32) 100%);
+      border: 1px solid rgba(0, 202, 255, 0.4);
+      color: #ffffff;
       border-bottom-right-radius: 4px;
-      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
     }
 
     .chat-msg.alexa .msg-bubble {
-      background: var(--bg-surface-elevated);
+      background: rgba(18, 26, 44, 0.85);
       border: 1px solid var(--border-subtle);
-      color: #f1f5f9;
+      color: #e2e8f0;
       border-bottom-left-radius: 4px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
     }
 
-    /* Structured Response Cards inside Alexa Messages */
+    /* Structured Cards in Chat */
     .structured-card {
-      margin-top: 10px;
-      background: rgba(0, 0, 0, 0.4);
+      margin-top: 12px;
+      background: rgba(10, 15, 26, 0.9);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
+      border-radius: 12px;
       padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
-
     .structured-card.critical {
       border-color: rgba(239, 68, 68, 0.4);
-      background: rgba(239, 68, 68, 0.06);
+      background: rgba(239, 68, 68, 0.05);
     }
-
     .structured-card.success {
       border-color: rgba(16, 185, 129, 0.4);
-      background: rgba(16, 185, 129, 0.06);
+      background: rgba(16, 185, 129, 0.05);
     }
 
     .telemetry-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      gap: 8px;
     }
-
     .telemetry-col {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 10px;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
     }
-
     .telemetry-label {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       color: var(--text-dim);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-
     .telemetry-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+      margin-top: 2px;
     }
 
-    /* Live MCP Protocol Telemetry Pane */
+    /* Interactive Canary Progress HUD */
+    .canary-shift-hud {
+      margin-top: 10px;
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .canary-meter-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .canary-progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(239, 68, 68, 0.5);
+      border-radius: 9999px;
+      overflow: hidden;
+      display: flex;
+    }
+    .canary-progress-fill {
+      height: 100%;
+      background: var(--status-emerald);
+      box-shadow: 0 0 12px var(--status-emerald);
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* PANE 2: Live Protocol Wire Telemetry Inspector */
     .telemetry-pane-container {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      height: 100%;
+      padding: 20px;
+      gap: 16px;
+      overflow-y: auto;
     }
 
     .telemetry-meta-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
       padding: 10px 16px;
-      font-size: 0.78rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      font-size: 0.76rem;
     }
 
     .meta-badge-group {
@@ -858,100 +1077,178 @@
       gap: 10px;
     }
 
-    .proto-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      background: rgba(0, 202, 255, 0.12);
-      color: var(--alexa-cyan);
-      border: 1px solid rgba(0, 202, 255, 0.3);
+    .meta-badge {
       padding: 3px 8px;
       border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+    }
+
+    .telemetry-split-grid {
+      flex: 1;
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
+      min-height: 500px;
     }
 
     .code-mirror-box {
-      flex: 1;
-      background: #060911;
+      background: #04060a;
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      border-radius: 12px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
     }
 
     .code-box-header {
-      padding: 10px 16px;
-      background: #0b101d;
-      border-bottom: 1px solid var(--border-subtle);
+      height: 38px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.76rem;
-      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.74rem;
+      font-weight: 600;
       color: var(--text-muted);
-    }
-
-    .btn-copy {
-      background: transparent;
-      border: 1px solid var(--border-subtle);
-      border-radius: 4px;
-      color: var(--text-dim);
-      font-size: 0.7rem;
-      padding: 3px 8px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .btn-copy:hover {
-      color: var(--alexa-cyan);
-      border-color: var(--alexa-cyan);
     }
 
     .code-viewer {
       flex: 1;
-      padding: 16px;
+      padding: 14px 16px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.6;
-      color: #cbd5e1;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: #a5b4fc;
       overflow-y: auto;
       white-space: pre-wrap;
+      word-break: break-all;
     }
 
-    /* JSON Syntax Coloring */
-    .json-key { color: #38bdf8; }
-    .json-str { color: #a5f3fc; }
+    /* JSON Syntax Highlighting */
+    .json-key { color: #38bdf8; font-weight: 600; }
+    .json-str { color: #86efac; }
     .json-num { color: #f59e0b; }
-    .json-bool { color: #ec4899; }
-    .json-null { color: #94a3b8; }
+    .json-bool { color: #c084fc; font-weight: 700; }
+    .json-null { color: #f43f5e; font-weight: 700; }
 
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* ==========================================================================
+       Command Palette Modal (Raycast / Spotlight Style)
+       ========================================================================== */
+    .cmd-palette-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 15vh;
+    }
+    .cmd-palette-backdrop.open {
+      display: flex;
+    }
+
+    .cmd-modal {
+      width: 100%;
+      max-width: 620px;
+      background: rgba(13, 19, 32, 0.95);
+      border: 1px solid rgba(0, 202, 255, 0.35);
+      border-radius: 18px;
+      box-shadow: 0 24px 72px rgba(0, 0, 0, 0.8), 0 0 32px rgba(0, 202, 255, 0.2);
+      overflow: hidden;
+      animation: modalSlide 0.2s var(--ease-out);
+    }
+    @keyframes modalSlide {
+      from { opacity: 0; transform: translateY(-16px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .cmd-input-wrap {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      gap: 12px;
+    }
+    .cmd-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-family: inherit;
+    }
+    .cmd-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .cmd-list {
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cmd-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.84rem;
+      color: #cbd5e1;
+    }
+    .cmd-item:hover, .cmd-item.selected {
+      background: rgba(0, 202, 255, 0.12);
+      color: var(--text-main);
+      transform: translateX(4px);
+    }
+    .cmd-tag {
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #94a3b8;
     }
 
     /* Toast Notification */
     #cockpit-toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 28px;
       right: 28px;
-      background: #0d1527;
-      border: 1px solid var(--alexa-cyan);
-      box-shadow: 0 10px 30px var(--alexa-cyan-glow);
       padding: 12px 20px;
-      border-radius: var(--radius-sm);
+      background: rgba(14, 21, 37, 0.95);
+      border: 1px solid var(--alexa-cyan);
+      box-shadow: 0 10px 30px rgba(0, 202, 255, 0.3);
+      border-radius: var(--radius-md);
+      color: #ffffff;
       font-size: 0.84rem;
-      color: #fff;
+      font-weight: 600;
+      z-index: 2000;
       display: none;
-      z-index: 1000;
-      animation: fadeInSlide 0.25s var(--ease-out);
+      animation: toastIn 0.3s var(--ease-out);
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
   <!-- ========================================================================
-       Top Navigation & System Status Header
+       Top Navigation & System Mission Bar
        ======================================================================== -->
   <header>
     <div class="brand-wrap">
@@ -962,22 +1259,40 @@
       </div>
       <div class="brand-text">
         <h1>OpsPulse for Alexa+ <span class="badge-alexa-plus">Alexa+ Preview</span></h1>
-        <div class="brand-sub">Autonomous SRE Copilot & Canary Rollback Controller</div>
+        <div class="brand-sub">
+          <span>Autonomous SRE Copilot & Canary Rollback Controller</span>
+          <span>•</span>
+          <span style="color: var(--alexa-cyan);">MCP Spec 2025-11-25</span>
+        </div>
       </div>
     </div>
 
     <div class="header-pills">
+      <!-- Command Palette Quick Launcher -->
+      <button class="cmd-palette-btn" onclick="openCommandPalette()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span>Command Menu</span>
+        <span class="cmd-key-badge">⌘K</span>
+      </button>
+
       <!-- MCP Connection Status Pill -->
       <div class="pill interactive" id="pill-mcp" onclick="checkBackendHealth()">
         <div class="status-dot" id="mcp-dot"></div>
         <span id="mcp-status-text">Connected to MCP Server: Streamable HTTP (2025-11-25)</span>
       </div>
 
-      <!-- AWS Bedrock Indicator -->
+      <!-- AWS Bedrock Pill -->
       <div class="pill">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         <span id="bedrock-status-text">AWS Bedrock Online</span>
       </div>
+
+      <!-- Synthesized Audio SFX Switch -->
+      <button class="btn-audio-sfx" id="btn-sfx" onclick="toggleAudioSfx()" title="Toggle Web Audio Synthesizer Sound FX">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+      </button>
 
       <!-- Simulation Fallback Toggle -->
       <div class="toggle-wrap" onclick="toggleOfflineMode()" title="Toggle simulated realistic responses when local server is offline">
@@ -988,6 +1303,53 @@
       </div>
     </div>
   </header>
+
+  <!-- ========================================================================
+       Live Service Mesh Status Ribbon
+       ======================================================================== -->
+  <div class="fleet-strip">
+    <div class="fleet-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10h2v4h-2zm0 6h2v2h-2z"/></svg>
+      <span>Service Mesh</span>
+    </div>
+
+    <div class="fleet-cards-wrap" id="fleet-container">
+      <div class="fleet-chip degraded" onclick="quickCheckService('payments-service')">
+        <div class="chip-dot"></div>
+        <span class="chip-name">payments-service</span>
+        <span class="chip-metric">1420ms | 14.8% err</span>
+      </div>
+
+      <div class="fleet-chip" onclick="quickCheckService('auth-service')">
+        <div class="chip-dot"></div>
+        <span class="chip-name">auth-service</span>
+        <span class="chip-metric">48ms | 0.02% err</span>
+      </div>
+
+      <div class="fleet-chip" onclick="quickCheckService('order-api')">
+        <div class="chip-dot"></div>
+        <span class="chip-name">order-api</span>
+        <span class="chip-metric">95ms | 0.08% err</span>
+      </div>
+
+      <div class="fleet-chip degraded" onclick="quickCheckService('inventory-service')">
+        <div class="chip-dot"></div>
+        <span class="chip-name">inventory-service</span>
+        <span class="chip-metric">860ms | 6.5% err</span>
+      </div>
+
+      <div class="fleet-chip" onclick="quickCheckService('notification-worker')">
+        <div class="chip-dot"></div>
+        <span class="chip-name">notification-worker</span>
+        <span class="chip-metric">15ms | 0.0% err</span>
+      </div>
+    </div>
+
+    <div class="mission-clock">
+      <span>UTC:</span>
+      <strong id="live-utc-clock">00:00:00</strong>
+    </div>
+  </div>
 
   <!-- ========================================================================
        Main Cockpit View
@@ -1116,6 +1478,7 @@
 
         <div style="font-size: 0.74rem; color: var(--text-dim); display: flex; align-items: center; gap: 10px;">
           <span>Target: <strong id="target-endpoint-label" style="color: #cbd5e1;">http://localhost:8000/mcp</strong></span>
+          <button class="btn-copy" onclick="exportIncidentPostMortem()" title="Download SRE Incident Post-Mortem in Markdown">Export Report</button>
           <button class="btn-copy" onclick="clearLogs()">Clear Logs</button>
         </div>
       </div>
@@ -1148,31 +1511,33 @@
             
             <div class="telemetry-meta-bar">
               <div class="meta-badge-group">
-                <span class="proto-tag">SPEC: 2025-11-25</span>
-                <span class="proto-tag">TRANSPORT: Streamable HTTP / SSE</span>
-                <span id="telemetry-method-tag" class="proto-tag" style="color: #a78bfa; border-color: rgba(167, 139, 250, 0.4);">METHOD: tools/call</span>
+                <span class="meta-badge" id="telemetry-method-tag">METHOD: tools/call (initialize)</span>
+                <span class="meta-badge">JSON-RPC 2.0</span>
+                <span class="meta-badge" style="color: #38bdf8;">Transport: SSE / Streamable HTTP</span>
               </div>
-              <div style="color: var(--text-dim); font-size: 0.75rem;" id="telemetry-timing">
-                Latency: <strong style="color: var(--status-emerald);">-- ms</strong>
+              <div id="telemetry-timing" style="font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;">
+                Latency: <strong style="color: var(--status-emerald);">0 ms</strong>
               </div>
             </div>
 
-            <!-- Outgoing JSON-RPC 2.0 Request -->
-            <div class="code-mirror-box" style="flex: 0 0 38%;">
-              <div class="code-box-header">
-                <span>Outgoing JSON-RPC 2.0 Request (POST /mcp/message)</span>
-                <button class="btn-copy" onclick="copyCode('jsonrpc-req-viewer')">Copy JSON</button>
+            <div class="telemetry-split-grid">
+              
+              <div class="code-mirror-box">
+                <div class="code-box-header">
+                  <span>Outbound MCP JSON-RPC Payload (Client Request)</span>
+                  <button class="btn-copy" onclick="copyCode('jsonrpc-req-viewer')">Copy Request</button>
+                </div>
+                <div class="code-viewer" id="jsonrpc-req-viewer">// Outbound JSON-RPC requests will appear here in real-time...</div>
               </div>
-              <div class="code-viewer" id="jsonrpc-req-viewer">// Waiting for outbound tool execution payload...</div>
-            </div>
 
-            <!-- Incoming MCP Tool Response Payload -->
-            <div class="code-mirror-box" style="flex: 1;">
-              <div class="code-box-header">
-                <span>Inbound MCP Tool Execution Result (Streamable Response / SSE)</span>
-                <button class="btn-copy" onclick="copyCode('jsonrpc-res-viewer')">Copy Response</button>
+              <div class="code-mirror-box">
+                <div class="code-box-header">
+                  <span>Inbound MCP Tool Execution Result (Streamable Response / SSE)</span>
+                  <button class="btn-copy" onclick="copyCode('jsonrpc-res-viewer')">Copy Response</button>
+                </div>
+                <div class="code-viewer" id="jsonrpc-res-viewer">// Inbound tool results will stream here in real-time...</div>
               </div>
-              <div class="code-viewer" id="jsonrpc-res-viewer">// Inbound tool results will stream here in real-time...</div>
+
             </div>
 
           </div>
@@ -1183,10 +1548,26 @@
     </div>
   </main>
 
+  <!-- ========================================================================
+       Command Palette Modal (Raycast / Spotlight Style)
+       ======================================================================== -->
+  <div class="cmd-palette-backdrop" id="cmd-palette" onclick="handlePaletteBackdrop(event)">
+    <div class="cmd-modal">
+      <div class="cmd-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#00caff"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" class="cmd-input" id="cmd-search-input" placeholder="Type an SRE command or prompt..." oninput="filterPaletteCommands()">
+        <span class="cmd-key-badge" style="cursor: pointer;" onclick="closeCommandPalette()">ESC</span>
+      </div>
+      <div class="cmd-list" id="cmd-options-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
   <div id="cockpit-toast"></div>
 
   <!-- ========================================================================
-       Vanilla JavaScript Client Logic
+       Client Logic & Cyber-Command Controllers
        ======================================================================== -->
   <script>
     // Dynamic Base Resolution (supports direct web serving, reverse proxies, and local file:// previews)
@@ -1213,11 +1594,88 @@
       isOfflineMode: false,
       isListening: false,
       isSpeaking: false,
+      isSfxEnabled: true,
       speechRecognition: null,
       activeSessionId: null,
       messageCounter: 0,
-      activeTab: "conv"
+      activeTab: "conv",
+      lastIncidentReport: null
     };
+
+    // ========================================================================
+    // Synthesized Web Audio Sound Engine (Zero external audio files)
+    // ========================================================================
+    const SoundEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+      },
+      playChime(type) {
+        if (!state.isSfxEnabled) return;
+        try {
+          this.init();
+          if (this.ctx.state === "suspended") this.ctx.resume();
+
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          if (type === "listen") {
+            // High crisp double-pip
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(880, now);
+            osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+            osc.start(now);
+            osc.stop(now + 0.15);
+          } else if (type === "success") {
+            // Ascending major chord
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+            gain.gain.setValueAtTime(0.09, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            osc.start(now);
+            osc.stop(now + 0.36);
+          } else if (type === "alert") {
+            // Urgent dual siren
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.setValueAtTime(330, now + 0.12);
+            gain.gain.setValueAtTime(0.07, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.32);
+          } else if (type === "warp") {
+            // Resonant space sweep
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(1760, now + 0.6);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+            osc.start(now);
+            osc.stop(now + 0.66);
+          }
+        } catch (e) {
+          // Audio context unavailable or user blocked
+        }
+      }
+    };
+
+    function toggleAudioSfx() {
+      state.isSfxEnabled = !state.isSfxEnabled;
+      const btn = document.getElementById("btn-sfx");
+      btn.classList.toggle("muted", !state.isSfxEnabled);
+      showToast(state.isSfxEnabled ? "Acoustic SFX: Enabled" : "Acoustic SFX: Muted");
+      if (state.isSfxEnabled) SoundEngine.playChime("listen");
+    }
 
     // Pre-Canned Realistic Responses for Offline Demo Mode
     const OFFLINE_FIXTURES = {
@@ -1371,32 +1829,43 @@
 
       state.speechRecognition.onstart = () => {
         state.isListening = true;
-        setOrbState("listening");
         document.getElementById("mic-btn").classList.add("recording");
-        updateVerbalTranscript("Listening to your voice...", "Speak clearly into your microphone");
+        setOrbState("listening");
+        updateVerbalTranscript("Listening...", "Speak your SRE command clearly...");
+        SoundEngine.playChime("listen");
       };
 
       state.speechRecognition.onresult = (event) => {
-        let transcript = "";
+        let interim = "";
+        let final = "";
+
         for (let i = event.resultIndex; i < event.results.length; ++i) {
-          transcript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            final += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
         }
-        document.getElementById("query-input").value = transcript;
-        updateVerbalTranscript(`"${transcript}"`, "Transcribing in real time...");
+
+        const currentText = final || interim;
+        if (currentText) {
+          updateVerbalTranscript(`"${currentText}"`, "Transcribing voice command...");
+        }
+
+        if (final) {
+          stopListening();
+          processVoiceCommand(final.trim());
+        }
       };
 
       state.speechRecognition.onerror = (event) => {
         console.warn("Speech recognition error:", event.error);
         stopListening();
-        showToast(`Microphone error: ${event.error}`);
+        showToast("Voice recognition notice: " + event.error);
       };
 
       state.speechRecognition.onend = () => {
         stopListening();
-        const query = document.getElementById("query-input").value.trim();
-        if (query) {
-          processVoiceCommand(query);
-        }
       };
     }
 
@@ -1404,9 +1873,9 @@
       if (!state.speechRecognition) {
         initSpeechRecognition();
       }
+
       if (!state.speechRecognition) {
-        showToast("Speech recognition not supported in this browser. Please type below.");
-        document.getElementById("query-input").focus();
+        showToast("Speech Recognition not supported in this browser. Use keyboard input.");
         return;
       }
 
@@ -1414,7 +1883,6 @@
         state.speechRecognition.stop();
         stopListening();
       } else {
-        // Cancel any active speech synthesis
         window.speechSynthesis.cancel();
         try {
           state.speechRecognition.start();
@@ -1442,7 +1910,7 @@
         return;
       }
 
-      window.speechSynthesis.cancel(); // Stop prior audio
+      window.speechSynthesis.cancel();
       const cleanText = text
         .replace(/[*_#`]/g, '')
         .replace(/p99/gi, 'p 99')
@@ -1453,7 +1921,6 @@
       utterance.rate = 1.05;
       utterance.pitch = 1.0;
 
-      // Select female/natural English voice if available
       const voices = window.speechSynthesis.getVoices();
       const preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Samantha") || v.name.includes("Jenny") || v.name.includes("Female")));
       if (preferred) {
@@ -1488,6 +1955,17 @@
       const label = document.getElementById("orb-state-label");
       orb.className = `alexa-orb-wrapper orb-state-${status}`;
       label.textContent = status.toUpperCase();
+
+      const backdrop = document.getElementById("orb-backdrop");
+      if (status === "thinking") {
+        backdrop.style.background = "radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, transparent 68%)";
+      } else if (status === "speaking") {
+        backdrop.style.background = "radial-gradient(circle, rgba(52, 211, 153, 0.45) 0%, transparent 68%)";
+      } else if (status === "antigravity") {
+        backdrop.style.background = "radial-gradient(circle, rgba(236, 72, 153, 0.6) 0%, transparent 68%)";
+      } else {
+        backdrop.style.background = "radial-gradient(circle, var(--alexa-cyan-glow) 0%, transparent 68%)";
+      }
     }
 
     function updateVerbalTranscript(mainText, hintText) {
@@ -1520,6 +1998,10 @@
       }
     }
 
+    function quickCheckService(serviceName) {
+      processVoiceCommand(`Alexa, check health for ${serviceName}`);
+    }
+
     async function processVoiceCommand(commandText) {
       state.messageCounter++;
       const lower = commandText.toLowerCase();
@@ -1530,36 +2012,39 @@
         return;
       }
 
-      // Add user message to conversation stream
       appendChatBubble("user", commandText);
       updateVerbalTranscript(`"${commandText}"`, "Dispatching MCP tool call via Streamable HTTP (2025-11-25)...");
-
-      // Switch orb to THINKING
       setOrbState("thinking");
 
-      // Determine matching tool
+      // Extract service name from utterance or default
+      let targetService = "payments-service";
+      if (lower.includes("auth")) targetService = "auth-service";
+      else if (lower.includes("order")) targetService = "order-api";
+      else if (lower.includes("inventory")) targetService = "inventory-service";
+      else if (lower.includes("notification")) targetService = "notification-worker";
+      else if (lower.includes("gateway")) targetService = "payment-gateway";
+
       let toolName = "get_service_health";
-      let args = { service_name: "payments-service" };
+      let args = { service_name: targetService };
       let fixtureKey = "health";
 
       if (lower.includes("analyze") || lower.includes("log") || lower.includes("timeout") || lower.includes("stack")) {
         toolName = "analyze_incident_log";
         args = {
-          service_name: "payments-service",
+          service_name: targetService,
           log_trace: "HTTP 504 Gateway Timeout downstream. HikariPool-1 connection not available, timed out after 30005ms."
         };
         fixtureKey = "analyze";
       } else if (lower.includes("rollback") || lower.includes("revert")) {
         toolName = "trigger_rollback";
         args = {
-          service_name: "payments-service",
+          service_name: targetService,
           target_version: "v2.4.1",
           reason: "Automated emergency canary rollback triggered via Alexa+"
         };
         fixtureKey = "rollback";
       }
 
-      // Build JSON-RPC 2.0 Payload
       const jsonRpcPayload = {
         jsonrpc: "2.0",
         id: `alexa-mcp-${state.messageCounter}`,
@@ -1570,12 +2055,9 @@
         }
       };
 
-      // Display in Protocol Telemetry Inspector
       displayJsonRpcRequest(jsonRpcPayload);
 
       const t0 = performance.now();
-
-      // Execute: Try real backend, or fallback to offline mode if offline or selected
       let resultData = null;
       let speechText = "";
 
@@ -1599,42 +2081,62 @@
           const latency = Math.round(performance.now() - t0);
           document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-emerald);">${latency} ms</strong>`;
           
-          // Parse structured tool response
           const toolContentRaw = resultData?.result?.content?.[0]?.text;
           const parsed = toolContentRaw ? JSON.parse(toolContentRaw) : resultData;
           speechText = generateSpeechFromParsedTool(toolName, parsed);
 
+          // Update Service Fleet Ribbon if health was restored
+          if (toolName === "trigger_rollback" && parsed.service_name === "payments-service") {
+            updateFleetStatus("payments-service", "HEALTHY", "52ms | 0.01% err");
+          }
+
         } catch (netErr) {
-          console.warn("Backend offline or request failed, falling back to simulated fixture:", netErr);
+          console.warn("Backend offline or request failed, using high-fidelity fallback:", netErr);
           showToast("Live server unreachable: Using High-Fidelity Simulation");
           resultData = OFFLINE_FIXTURES[fixtureKey].response;
           speechText = OFFLINE_FIXTURES[fixtureKey].speechText;
           document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-amber);">Simulated 42ms</strong>`;
         }
       } else {
-        // Offline demo mode active
-        await new Promise(r => setTimeout(r, 600)); // realistic thinking delay
+        await new Promise(r => setTimeout(r, 600));
         resultData = OFFLINE_FIXTURES[fixtureKey].response;
         speechText = OFFLINE_FIXTURES[fixtureKey].speechText;
         document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-amber);">Offline Demo (38ms)</strong>`;
       }
 
-      // Display response in Telemetry panel
       displayJsonRpcResponse(resultData);
-
-      // Render Alexa bubble in chat stream
       appendAlexaResponseCard(toolName, resultData, speechText);
-
-      // Update Verbal Transcript & Speak Aloud
       updateVerbalTranscript(`Alexa: "${speechText}"`, "Speech synthesis playing...");
+
+      // Play Sound FX
+      if (toolName === "trigger_rollback") {
+        SoundEngine.playChime("success");
+      } else if (toolName === "analyze_incident_log") {
+        SoundEngine.playChime("alert");
+      } else {
+        SoundEngine.playChime("listen");
+      }
+
       speakAlexaResponse(speechText);
+    }
+
+    function updateFleetStatus(svcName, status, metricText) {
+      const container = document.getElementById("fleet-container");
+      const chips = container.querySelectorAll(".fleet-chip");
+      chips.forEach(chip => {
+        if (chip.textContent.includes(svcName)) {
+          chip.className = `fleet-chip ${status === 'HEALTHY' ? '' : 'degraded'}`;
+          const metricSpan = chip.querySelector(".chip-metric");
+          if (metricSpan) metricSpan.textContent = metricText;
+        }
+      });
     }
 
     function generateSpeechFromParsedTool(toolName, data) {
       if (toolName === "get_service_health") {
         return `I've checked ${data.service_name || 'payments-service'}. Status is ${data.status} with a p99 latency of ${data.latency_p99_ms} milliseconds and ${data.error_rate_pct}% errors.`;
       } else if (toolName === "analyze_incident_log") {
-        return `Amazon Bedrock Claude 3.5 Sonnet identified a ${data.severity || 'SEV-1 Critical'} incident. Root cause: connection pool exhaustion. Recommendation: trigger rollback to version v2.4.1.`;
+        return `Amazon Bedrock Claude 3.5 Sonnet identified a ${data.severity || 'SEV-1 Critical'} incident. Root cause: database connection pool starvation. Recommendation: trigger rollback to version v2.4.1.`;
       } else if (toolName === "trigger_rollback") {
         return `Canary rollback completed successfully. Traffic shifted 100% to version ${data.target_version || 'v2.4.1'}, and synthetic health checks are green.`;
       }
@@ -1645,6 +2147,7 @@
     // Easter Egg: "Alexa, import antigravity"
     // ========================================================================
     function executeAntigravityEasterEgg() {
+      SoundEngine.playChime("warp");
       appendChatBubble("user", "Alexa, import antigravity");
       setOrbState("antigravity");
       
@@ -1682,7 +2185,6 @@
       displayJsonRpcRequest(payload);
       displayJsonRpcResponse(result);
 
-      // Append fun chat bubble
       const stream = document.getElementById("chat-stream");
       const msg = document.createElement("div");
       msg.className = "chat-msg alexa";
@@ -1691,9 +2193,9 @@
           <span style="color: var(--status-emerald); font-weight: 700;">Alexa+ Easter Egg</span>
           <span>• Antigravity Engine</span>
         </div>
-        <div class="msg-bubble" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.4);">
+        <div class="msg-bubble" style="background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.45);">
           🚀 <strong>Antigravity module loaded!</strong> The Alexa+ orb has engaged gravity neutralization fields.<br>
-          <em style="color: #94a3b8;">"I wrote 20 lines of code and now I'm flying!"</em> — Python / XKCD 353
+          <em style="color: #cbd5e1;">"I wrote 20 lines of code and now I'm flying!"</em> — Python / XKCD 353
         </div>
       `;
       stream.appendChild(msg);
@@ -1734,12 +2236,14 @@
       if (toolRaw) {
         try {
           const d = JSON.parse(toolRaw);
+          state.lastIncidentReport = { toolName, data: d, timestamp: new Date().toISOString() };
+
           if (toolName === "get_service_health") {
             const isDegraded = d.status !== "HEALTHY";
             cardHtml = `
               <div class="structured-card ${isDegraded ? 'critical' : 'success'}">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <strong style="font-size: 0.95rem;">${d.service_name}</strong>
+                  <strong style="font-size: 0.95rem; color: #ffffff;">${d.service_name}</strong>
                   <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: ${isDegraded ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${isDegraded ? 'var(--status-crimson)' : 'var(--status-emerald)'}; font-weight: 700;">
                     ${d.status}
                   </span>
@@ -1751,21 +2255,39 @@
                   <div class="telemetry-col"><span class="telemetry-label">Replicas</span><span class="telemetry-value">${d.active_replicas}/${d.desired_replicas}</span></div>
                 </div>
                 <div style="font-size: 0.76rem; color: #94a3b8;">${d.details}</div>
+                ${isDegraded ? `
+                  <button class="btn-copy" style="align-self: flex-start; border-color: rgba(239,68,68,0.4); color: #fca5a5;" onclick="triggerPreset('rollback')">
+                    🚨 Execute Emergency Rollback to v2.4.1
+                  </button>
+                ` : ''}
               </div>
             `;
           } else if (toolName === "analyze_incident_log") {
             cardHtml = `
               <div class="structured-card critical">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <strong style="color: #fca5a5;">${d.severity} Diagnostic</strong>
-                  <span style="font-size: 0.72rem; color: #f59e0b;">${d.model_id || 'Claude 3.5 Sonnet'}</span>
+                  <strong style="color: #fca5a5; font-size: 0.95rem;">${d.severity} Diagnostic</strong>
+                  <span style="font-size: 0.72rem; color: #f59e0b; font-family: 'JetBrains Mono', monospace;">${d.model_id || 'Claude 3.5 Sonnet'}</span>
                 </div>
-                <div style="font-size: 0.8rem; line-height: 1.5; color: #e2e8f0;">
+                <div style="font-size: 0.82rem; line-height: 1.5; color: #f1f5f9;">
                   <strong>Root Cause:</strong> ${d.root_cause_summary}
                 </div>
-                <div style="font-size: 0.76rem; color: #cbd5e1; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
-                  <strong>Remediation Playbook:</strong><br>
-                  ${(d.remediation_playbook || []).join('<br>')}
+                <div style="font-size: 0.78rem; color: #cbd5e1; background: rgba(0,0,0,0.4); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                  <strong style="color: #38bdf8;">Remediation Playbook:</strong><br>
+                  ${(d.remediation_playbook || []).map(step => `
+                    <label style="display: flex; align-items: flex-start; gap: 8px; margin-top: 6px; cursor: pointer;">
+                      <input type="checkbox" style="margin-top: 2px; accent-color: var(--alexa-cyan);">
+                      <span>${step}</span>
+                    </label>
+                  `).join('')}
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 4px;">
+                  <button class="btn-copy" style="border-color: rgba(239,68,68,0.4); color: #fca5a5; font-weight: 600;" onclick="triggerPreset('rollback')">
+                    ⚡ Auto-Remediate (Trigger Rollback)
+                  </button>
+                  <button class="btn-copy" onclick="exportIncidentPostMortem()">
+                    📄 Download Post-Mortem .md
+                  </button>
                 </div>
               </div>
             `;
@@ -1773,13 +2295,25 @@
             cardHtml = `
               <div class="structured-card success">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <strong style="color: var(--status-emerald);">Rollback Succeeded</strong>
-                  <span style="font-size: 0.72rem; color: #94a3b8;">ID: ${d.rollback_id}</span>
+                  <strong style="color: var(--status-emerald); font-size: 0.95rem;">Canary Rollback Succeeded</strong>
+                  <span style="font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: #94a3b8;">ID: ${d.rollback_id}</span>
                 </div>
-                <div style="font-size: 0.78rem; color: #cbd5e1;">
+                <div style="font-size: 0.8rem; color: #cbd5e1;">
                   Reverted <strong>${d.service_name}</strong> from <code>${d.previous_version}</code> to <code>${d.target_version}</code> in ${d.duration_seconds}s.
                 </div>
-                <div style="font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: #94a3b8; background: #000; padding: 8px; border-radius: 6px; max-height: 100px; overflow-y: auto;">
+                
+                <!-- Live Shifter HUD -->
+                <div class="canary-shift-hud">
+                  <div class="canary-meter-header">
+                    <span>Target Group Shift: Stable 100% (Canary 0%)</span>
+                    <span style="color: var(--status-emerald);">VERIFIED</span>
+                  </div>
+                  <div class="canary-progress-track">
+                    <div class="canary-progress-fill" style="width: 100%;"></div>
+                  </div>
+                </div>
+
+                <div style="font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: #94a3b8; background: #000; padding: 10px; border-radius: 8px; max-height: 110px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.06);">
                   ${(d.execution_logs || []).join('<br>')}
                 </div>
               </div>
@@ -1800,7 +2334,6 @@
           ${cardHtml}
         </div>
       `;
-
       stream.appendChild(msg);
       stream.scrollTop = stream.scrollHeight;
       updateChatCount();
@@ -1925,6 +2458,116 @@
     }
 
     // ========================================================================
+    // Post-Mortem Incident Report Exporter (Markdown)
+    // ========================================================================
+    function exportIncidentPostMortem() {
+      const reportData = state.lastIncidentReport?.data || {
+        service_name: "payments-service",
+        severity: "SEV-1 (Critical)",
+        root_cause_summary: "Downstream database connection pool starvation causing HTTP 504 timeouts.",
+        remediation_playbook: [
+          "1. Trigger emergency canary rollback to v2.4.1.",
+          "2. Route traffic away from degraded canary replicas in ALB.",
+          "3. Increase connection pool limits in RDS Proxy."
+        ]
+      };
+
+      const mdContent = `# OpsPulse SRE Incident Post-Mortem Report
+**Generated:** ${new Date().toISOString()}  
+**System:** Alexa+ OpsPulse Autonomous SRE Copilot  
+**Protocol:** Model Context Protocol (MCP) Streamable HTTP / SSE 2025-11-25  
+
+---
+
+## 1. Incident Overview
+- **Impacted Service:** \`${reportData.service_name || "payments-service"}\`
+- **Severity Level:** **${reportData.severity || "SEV-1 (Critical)"}**
+- **Model Engine:** \`Amazon Bedrock (anthropic.claude-3-5-sonnet-20240620-v1:0)\`
+- **Resolution Status:** Canary Rollback Completed (Reverted to v2.4.1)
+
+## 2. Root Cause Analysis
+${reportData.root_cause_summary || "Connection pool exhaustion under concurrent authorization burst."}
+
+## 3. Remediation Playbook Executed
+${(reportData.remediation_playbook || []).map(s => `- ${s}`).join('\n')}
+
+## 4. Verification & Audit Trail
+- Canary weighted routing shifted 10% -> 0%
+- ECS active task definition reverted to stable tag \`v2.4.1\`
+- CloudWatch synthetic verification probes: **20/20 PASS (HTTP 200 OK, p99 38ms)**
+- Event emitted to EventBridge event bus: \`OpsPulseAuditBus\`
+`;
+
+      const blob = new Blob([mdContent], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `incident-postmortem-${Date.now()}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Post-mortem incident markdown report downloaded!");
+    }
+
+    // ========================================================================
+    // Command Palette Controller (Raycast / Spotlight Style)
+    // ========================================================================
+    const COMMAND_ITEMS = [
+      { name: "Check Health: payments-service", action: () => triggerPreset("health"), tag: "Tool: get_service_health" },
+      { name: "Analyze Timeout Incident Log (Bedrock)", action: () => triggerPreset("analyze"), tag: "Tool: analyze_incident_log" },
+      { name: "Trigger Canary Rollback (payments-service -> v2.4.1)", action: () => triggerPreset("rollback"), tag: "Tool: trigger_rollback" },
+      { name: "Import Antigravity (Easter Egg)", action: () => triggerPreset("antigravity"), tag: "Python XKCD" },
+      { name: "Check Health: auth-service", action: () => quickCheckService("auth-service"), tag: "get_service_health" },
+      { name: "Check Health: order-api", action: () => quickCheckService("order-api"), tag: "get_service_health" },
+      { name: "Check Health: inventory-service", action: () => quickCheckService("inventory-service"), tag: "get_service_health" },
+      { name: "Toggle Offline Simulation Demo Mode", action: () => toggleOfflineMode(), tag: "Cockpit State" },
+      { name: "Download Incident Post-Mortem (.md)", action: () => exportIncidentPostMortem(), tag: "Export" },
+      { name: "Clear Telemetry & Chat Logs", action: () => clearLogs(), tag: "Cockpit Action" }
+    ];
+
+    function openCommandPalette() {
+      const palette = document.getElementById("cmd-palette");
+      palette.classList.add("open");
+      const input = document.getElementById("cmd-search-input");
+      input.value = "";
+      filterPaletteCommands();
+      input.focus();
+    }
+
+    function closeCommandPalette() {
+      document.getElementById("cmd-palette").classList.remove("open");
+    }
+
+    function handlePaletteBackdrop(event) {
+      if (event.target.id === "cmd-palette") {
+        closeCommandPalette();
+      }
+    }
+
+    function filterPaletteCommands() {
+      const query = document.getElementById("cmd-search-input").value.toLowerCase();
+      const list = document.getElementById("cmd-options-list");
+      list.innerHTML = "";
+
+      const filtered = COMMAND_ITEMS.filter(item => 
+        item.name.toLowerCase().includes(query) || item.tag.toLowerCase().includes(query)
+      );
+
+      filtered.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.className = `cmd-item ${idx === 0 ? 'selected' : ''}`;
+        div.innerHTML = `
+          <span>${escapeHtml(item.name)}</span>
+          <span class="cmd-tag">${escapeHtml(item.tag)}</span>
+        `;
+        div.onclick = () => {
+          closeCommandPalette();
+          item.action();
+        };
+        list.appendChild(div);
+      });
+    }
+
+    // ========================================================================
     // Lifecycle Bootstrap
     // ========================================================================
     window.addEventListener("DOMContentLoaded", () => {
@@ -1941,10 +2584,28 @@
       // Check backend connectivity
       checkBackendHealth();
 
+      // Live UTC Mission Clock
+      setInterval(() => {
+        const now = new Date();
+        const utcStr = now.toUTCString().split(" ")[4];
+        const clockEl = document.getElementById("live-utc-clock");
+        if (clockEl) clockEl.textContent = `${utcStr} UTC`;
+      }, 1000);
+
       // Enter key handler for input
       document.getElementById("query-input").addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           handleInputSubmit();
+        }
+      });
+
+      // Global Keyboard Shortcut: ⌘K or Ctrl+K for Command Palette
+      window.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          openCommandPalette();
+        } else if (e.key === "Escape") {
+          closeCommandPalette();
         }
       });
     });
