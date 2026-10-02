@@ -3,54 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpsPulse for Alexa+ | Autonomous SRE Voice Cockpit</title>
+  <title>OpsPulse for Alexa+ | Executive SRE Voice Cockpit</title>
   
-  <!-- Modern Typography: Inter Display + JetBrains Mono -->
+  <!-- Modern Executive Typography: Inter Display + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
     /* ==========================================================================
-       Design System & Variables (Cyber-Command Alexa Dark Identity)
+       Design System & Variables (Executive Slate/Obsidian Identity)
        ========================================================================== */
     :root {
-      --bg-base: #06080e;
-      --bg-surface: #0b101c;
-      --bg-surface-elevated: #101728;
-      --bg-card: rgba(16, 23, 40, 0.72);
-      --bg-card-hover: rgba(23, 33, 56, 0.85);
+      /* Layered Obsidian & Slate Surfaces */
+      --bg-base: #0b0f19;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1e293b;
+      --bg-card: rgba(17, 24, 39, 0.78);
+      --bg-card-hover: rgba(30, 41, 59, 0.9);
       --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-medium: rgba(255, 255, 255, 0.14);
-      --border-active: rgba(0, 202, 255, 0.55);
+      --border-medium: rgba(255, 255, 255, 0.15);
+      --border-highlight: rgba(0, 202, 255, 0.5);
       
+      /* Typography */
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
       
-      /* Alexa Brand & Dynamic Spectrum */
+      /* Alexa Brand Spectrum */
       --alexa-cyan: #00caff;
-      --alexa-cyan-glow: rgba(0, 202, 255, 0.4);
+      --alexa-cyan-glow: rgba(0, 202, 255, 0.45);
       --alexa-cyan-soft: rgba(0, 202, 255, 0.12);
       --alexa-blue: #0284c7;
       --alexa-indigo: #6366f1;
       --alexa-purple: #a855f7;
       
-      /* Status Palette */
+      /* Operational Status Palette */
       --status-emerald: #10b981;
-      --status-emerald-glow: rgba(16, 185, 129, 0.35);
+      --status-emerald-glow: rgba(16, 185, 129, 0.4);
       --status-amber: #f59e0b;
-      --status-amber-glow: rgba(245, 158, 11, 0.35);
+      --status-amber-glow: rgba(245, 158, 11, 0.4);
       --status-crimson: #ef4444;
-      --status-crimson-glow: rgba(239, 68, 68, 0.4);
+      --status-crimson-glow: rgba(239, 68, 68, 0.45);
       
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
       --radius-pill: 9999px;
       
-      --shadow-card: 0 12px 36px 0 rgba(0, 0, 0, 0.52), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
-      --shadow-glow: 0 0 24px rgba(0, 202, 255, 0.3);
+      --shadow-card: 0 16px 40px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+      --shadow-glow: 0 0 28px rgba(0, 202, 255, 0.35);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --transition: all 0.24s var(--ease-out);
     }
@@ -64,12 +66,12 @@
     body {
       background-color: var(--bg-base);
       background-image: 
-        radial-gradient(circle at 15% 15%, rgba(0, 202, 255, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 50% 85%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
-        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+        radial-gradient(circle at 18% 12%, rgba(0, 202, 255, 0.09) 0%, transparent 42%),
+        radial-gradient(circle at 82% 16%, rgba(99, 102, 241, 0.09) 0%, transparent 44%),
+        radial-gradient(circle at 50% 88%, rgba(168, 85, 247, 0.07) 0%, transparent 52%),
+        linear-gradient(rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
       color: var(--text-main);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
@@ -85,7 +87,7 @@
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.25);
     }
     ::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.16);
@@ -96,17 +98,17 @@
     }
 
     /* ==========================================================================
-       Header & Real-Time Mission Bar
+       Header & Proof-Points Mission Bar
        ========================================================================== */
     header {
-      height: 74px;
-      padding: 0 28px;
+      height: 76px;
+      padding: 0 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border-subtle);
-      background: rgba(6, 8, 14, 0.84);
-      backdrop-filter: blur(28px);
+      background: rgba(11, 15, 25, 0.88);
+      backdrop-filter: blur(24px);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -121,32 +123,32 @@
     }
 
     .brand-logo {
-      width: 44px;
-      height: 44px;
+      width: 46px;
+      height: 46px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #00caff 0%, #0077b6 50%, #6366f1 100%);
+      background: linear-gradient(135deg, #00caff 0%, #0284c7 45%, #6366f1 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 28px var(--alexa-cyan-glow);
+      box-shadow: 0 0 30px var(--alexa-cyan-glow);
       position: relative;
       animation: logoGlow 4s ease-in-out infinite alternate;
     }
 
     @keyframes logoGlow {
-      0% { box-shadow: 0 0 16px rgba(0, 202, 255, 0.3); }
-      100% { box-shadow: 0 0 32px rgba(99, 102, 241, 0.55); }
+      0% { box-shadow: 0 0 16px rgba(0, 202, 255, 0.35); }
+      100% { box-shadow: 0 0 34px rgba(99, 102, 241, 0.6); }
     }
 
     .brand-logo svg {
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       fill: #ffffff;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
     }
 
     .brand-text h1 {
-      font-size: 1.24rem;
+      font-size: 1.28rem;
       font-weight: 800;
       letter-spacing: -0.025em;
       display: flex;
@@ -176,10 +178,11 @@
       gap: 8px;
     }
 
+    /* Executive Proof-Points Group */
     .header-pills {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .pill {
@@ -188,21 +191,40 @@
       gap: 8px;
       padding: 6px 14px;
       border-radius: var(--radius-pill);
-      background: rgba(255, 255, 255, 0.035);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-subtle);
-      font-size: 0.78rem;
-      font-weight: 500;
+      font-size: 0.76rem;
+      font-weight: 600;
       color: var(--text-muted);
       transition: var(--transition);
+      white-space: nowrap;
     }
 
     .pill.interactive {
       cursor: pointer;
     }
     .pill.interactive:hover {
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.08);
       border-color: var(--border-medium);
       color: var(--text-main);
+    }
+
+    .pill.pill-mcp {
+      border-color: rgba(0, 202, 255, 0.3);
+      background: rgba(0, 202, 255, 0.06);
+      color: #7dd3fc;
+    }
+
+    .pill.pill-bedrock {
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.06);
+      color: #fde68a;
+    }
+
+    .pill.pill-voice {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(99, 102, 241, 0.06);
+      color: #c7d2fe;
     }
 
     .status-dot {
@@ -218,6 +240,17 @@
     @keyframes pulseGreen {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.55; transform: scale(0.9); }
+    }
+
+    .status-dot.amber {
+      background: var(--status-amber);
+      box-shadow: 0 0 10px var(--status-amber);
+      animation: none;
+    }
+
+    .status-dot.blue {
+      background: var(--alexa-cyan);
+      box-shadow: 0 0 10px var(--alexa-cyan);
     }
 
     .status-dot.offline {
@@ -246,7 +279,7 @@
       box-shadow: 0 0 16px rgba(0, 202, 255, 0.25);
     }
     .cmd-key-badge {
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.4);
       padding: 2px 6px;
       border-radius: 4px;
       font-family: 'JetBrains Mono', monospace;
@@ -255,13 +288,13 @@
       color: #cbd5e1;
     }
 
-    /* Sound FX Toggle Button */
+    /* Audio SFX Toggle Button */
     .btn-audio-sfx {
       background: none;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-pill);
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -276,7 +309,7 @@
     }
     .btn-audio-sfx.muted {
       color: var(--text-dim);
-      opacity: 0.6;
+      opacity: 0.55;
     }
 
     /* Toggle Switch */
@@ -285,14 +318,14 @@
       align-items: center;
       gap: 8px;
       cursor: pointer;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
       padding: 4px 10px;
       border-radius: var(--radius-pill);
       transition: var(--transition);
     }
     .toggle-wrap:hover {
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text-main);
     }
 
@@ -324,11 +357,11 @@
     }
 
     /* ==========================================================================
-       Service Fleet Mesh Strip (Live Microservices Status Ribbon)
+       Live Service Mesh Ribbon
        ========================================================================== */
     .fleet-strip {
-      padding: 10px 28px;
-      background: rgba(11, 16, 28, 0.75);
+      padding: 10px 32px;
+      background: rgba(17, 24, 39, 0.7);
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
@@ -362,9 +395,9 @@
       display: flex;
       align-items: center;
       gap: 9px;
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 8px;
-      background: rgba(16, 23, 40, 0.6);
+      background: rgba(30, 41, 59, 0.6);
       border: 1px solid var(--border-subtle);
       font-size: 0.74rem;
       cursor: pointer;
@@ -373,13 +406,13 @@
       user-select: none;
     }
     .fleet-chip:hover {
-      background: rgba(23, 33, 56, 0.9);
-      border-color: var(--border-active);
+      background: rgba(30, 41, 59, 0.95);
+      border-color: var(--border-highlight);
       transform: translateY(-1px);
     }
     .fleet-chip.degraded {
-      border-color: rgba(239, 68, 68, 0.45);
-      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.5);
+      background: rgba(239, 68, 68, 0.09);
     }
     .fleet-chip.degraded .chip-dot {
       background: var(--status-crimson);
@@ -426,16 +459,16 @@
        ========================================================================== */
     main {
       flex: 1;
-      padding: 24px 28px;
+      padding: 24px 32px;
       display: grid;
-      grid-template-columns: 460px 1fr;
+      grid-template-columns: 480px 1fr;
       gap: 24px;
-      max-width: 1780px;
+      max-width: 1760px;
       margin: 0 auto;
       width: 100%;
     }
 
-    @media (max-width: 1180px) {
+    @media (max-width: 1220px) {
       main {
         grid-template-columns: 1fr;
       }
@@ -446,7 +479,7 @@
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      backdrop-filter: blur(24px);
+      backdrop-filter: blur(20px);
       box-shadow: var(--shadow-card);
       overflow: hidden;
       display: flex;
@@ -454,7 +487,7 @@
     }
 
     /* ==========================================================================
-       Column 1: Alexa+ Voice Center & Orb Stage
+       Column 1: Alexa+ Visual Ring / Orb Stage
        ========================================================================== */
     .voice-console {
       display: flex;
@@ -463,34 +496,57 @@
     }
 
     .orb-stage {
-      padding: 34px 24px;
+      padding: 38px 24px 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       position: relative;
-      background: radial-gradient(circle at 50% 50%, rgba(0, 202, 255, 0.05) 0%, transparent 70%);
+      background: radial-gradient(circle at 50% 48%, rgba(0, 202, 255, 0.06) 0%, transparent 68%);
       border-bottom: 1px solid var(--border-subtle);
       overflow: hidden;
     }
 
-    /* Glowing Backdrop for Orb */
+    /* Ambient Glow Behind Orb */
     .orb-glow-backdrop {
       position: absolute;
-      width: 280px;
-      height: 280px;
+      width: 300px;
+      height: 300px;
       border-radius: 50%;
-      background: radial-gradient(circle, var(--alexa-cyan-glow) 0%, transparent 68%);
-      filter: blur(36px);
+      background: radial-gradient(circle, var(--alexa-cyan-glow) 0%, transparent 70%);
+      filter: blur(45px);
       opacity: 0.45;
       transition: all 0.8s ease;
       pointer-events: none;
     }
 
-    /* Dynamic Orb States */
+    /* Concentric Expanding Shockwave Rings (Sound Waves) */
+    .sound-ripple-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 202, 255, 0.4);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .orb-state-listening .sound-ripple-ring:nth-child(1) {
+      animation: rippleExpand 2.2s infinite ease-out;
+    }
+    .orb-state-listening .sound-ripple-ring:nth-child(2) {
+      animation: rippleExpand 2.2s infinite ease-out 0.7s;
+    }
+    .orb-state-listening .sound-ripple-ring:nth-child(3) {
+      animation: rippleExpand 2.2s infinite ease-out 1.4s;
+    }
+
+    @keyframes rippleExpand {
+      0% { width: 140px; height: 140px; opacity: 0.8; transform: scale(1); }
+      100% { width: 340px; height: 340px; opacity: 0; transform: scale(1.6); }
+    }
+
+    /* Central Orb Interactive Shell */
     .alexa-orb-wrapper {
-      width: 164px;
-      height: 164px;
+      width: 168px;
+      height: 168px;
       border-radius: 50%;
       position: relative;
       cursor: pointer;
@@ -499,35 +555,37 @@
       justify-content: center;
       transition: all 0.4s var(--ease-out);
       user-select: none;
+      z-index: 10;
     }
     .alexa-orb-wrapper:hover {
       transform: scale(1.04);
     }
     .alexa-orb-wrapper:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
     }
 
     /* Atmospheric Outer Ring */
     .alexa-outer-ring {
       position: absolute;
-      inset: -12px;
+      inset: -14px;
       border-radius: 50%;
-      border: 1px dashed rgba(0, 202, 255, 0.35);
-      animation: rotateRing 24s linear infinite;
+      border: 1px dashed rgba(0, 202, 255, 0.4);
+      animation: rotateRing 26s linear infinite;
     }
     @keyframes rotateRing {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
 
+    /* Inner Sphere Surface */
     .alexa-inner-sphere {
-      width: 136px;
-      height: 136px;
+      width: 140px;
+      height: 140px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #00caff 0%, #0077b6 45%, #060914 90%);
+      background: radial-gradient(circle at 35% 30%, #00caff 0%, #0284c7 45%, #050b18 90%);
       box-shadow: 
-        inset 0 0 25px rgba(255, 255, 255, 0.6),
-        0 0 35px var(--alexa-cyan-glow);
+        inset 0 0 28px rgba(255, 255, 255, 0.65),
+        0 0 38px var(--alexa-cyan-glow);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -538,8 +596,8 @@
     }
 
     .alexa-orb-icon {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       fill: #ffffff;
       filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
       transition: all 0.3s ease;
@@ -550,18 +608,18 @@
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.95);
       margin-top: 6px;
       text-shadow: 0 1px 4px rgba(0,0,0,0.8);
     }
 
-    /* Acoustic Waveforms Container */
+    /* Acoustic Equalizer Bars */
     .acoustic-wave-container {
       position: absolute;
       display: flex;
       align-items: center;
       gap: 4px;
-      height: 48px;
+      height: 50px;
       opacity: 0;
       transition: opacity 0.3s ease;
       z-index: 3;
@@ -574,12 +632,21 @@
       box-shadow: 0 0 8px #ffffff;
     }
 
-    /* Orb State: LISTENING */
+    /* State: IDLE (Slow breathing azure glow) */
+    .orb-state-idle .alexa-inner-sphere {
+      animation: idleBreathe 3.5s ease-in-out infinite alternate;
+    }
+    @keyframes idleBreathe {
+      0% { box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.5), 0 0 30px rgba(0, 202, 255, 0.35); }
+      100% { box-shadow: inset 0 0 32px rgba(255, 255, 255, 0.8), 0 0 52px rgba(0, 202, 255, 0.65); transform: scale(1.02); }
+    }
+
+    /* State: LISTENING (Active sound rings + electric core) */
     .orb-state-listening .alexa-inner-sphere {
       background: radial-gradient(circle at 35% 30%, #38bdf8 0%, #0284c7 45%, #0369a1 90%);
       box-shadow: 
-        inset 0 0 35px rgba(255, 255, 255, 0.8),
-        0 0 55px rgba(56, 189, 248, 0.8);
+        inset 0 0 35px rgba(255, 255, 255, 0.85),
+        0 0 60px rgba(56, 189, 248, 0.85);
       animation: orbListenPulse 1.2s infinite alternate;
     }
     .orb-state-listening .acoustic-wave-container {
@@ -593,33 +660,33 @@
     }
     @keyframes orbListenPulse {
       0% { transform: scale(1); }
-      100% { transform: scale(1.08); }
+      100% { transform: scale(1.07); }
     }
     @keyframes waveBounce {
       0% { height: 8px; }
-      100% { height: 42px; }
+      100% { height: 44px; }
     }
 
-    /* Orb State: THINKING */
+    /* State: THINKING (Rotating cyan/indigo gradient spinner) */
     .orb-state-thinking .alexa-inner-sphere {
       background: radial-gradient(circle at 35% 30%, #a855f7 0%, #6366f1 45%, #1e1b4b 90%);
       box-shadow: 
-        inset 0 0 30px rgba(255, 255, 255, 0.7),
-        0 0 45px rgba(168, 85, 247, 0.65);
-      animation: orbThinkingRotate 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        inset 0 0 32px rgba(255, 255, 255, 0.75),
+        0 0 50px rgba(168, 85, 247, 0.7);
+      animation: orbThinkingRotate 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
     @keyframes orbThinkingRotate {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
 
-    /* Orb State: SPEAKING */
+    /* State: SPEAKING (Audio reactive frequency pulse) */
     .orb-state-speaking .alexa-inner-sphere {
       background: radial-gradient(circle at 35% 30%, #34d399 0%, #059669 45%, #064e3b 90%);
       box-shadow: 
-        inset 0 0 30px rgba(255, 255, 255, 0.7),
-        0 0 45px rgba(52, 211, 153, 0.7);
-      animation: orbSpeakBounce 0.6s infinite alternate;
+        inset 0 0 30px rgba(255, 255, 255, 0.75),
+        0 0 50px rgba(52, 211, 153, 0.75);
+      animation: orbSpeakBounce 0.55s infinite alternate;
     }
     .orb-state-speaking .acoustic-wave-container {
       opacity: 1;
@@ -636,25 +703,36 @@
       100% { transform: scale(1.06); }
     }
 
-    /* Orb State: ANTIGRAVITY EASTER EGG */
+    /* State: ANTIGRAVITY EASTER EGG */
     .orb-state-antigravity .alexa-inner-sphere {
       background: radial-gradient(circle at 35% 30%, #ec4899 0%, #8b5cf6 45%, #06b6d4 90%);
       box-shadow: 
-        0 0 60px rgba(236, 72, 153, 0.85),
-        0 0 100px rgba(139, 92, 246, 0.6);
+        0 0 65px rgba(236, 72, 153, 0.9),
+        0 0 110px rgba(139, 92, 246, 0.65);
       animation: orbLevitate 3s ease-in-out infinite alternate, orbThinkingRotate 6s linear infinite;
     }
     @keyframes orbLevitate {
       0% { transform: translateY(0px); }
-      100% { transform: translateY(-16px); }
+      100% { transform: translateY(-18px); }
+    }
+
+    /* Wave Reflections Floor */
+    .orb-reflection {
+      width: 140px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(0, 202, 255, 0.35) 0%, transparent 70%);
+      filter: blur(6px);
+      margin-top: 14px;
+      transition: all 0.5s ease;
     }
 
     /* Dynamic Transcript Bubble */
     .live-transcript-wrap {
-      margin-top: 22px;
+      margin-top: 18px;
       text-align: center;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
     }
     .transcript-bubble {
       font-size: 0.92rem;
@@ -665,8 +743,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 14px;
-      background: rgba(255, 255, 255, 0.03);
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.035);
       border-radius: var(--radius-md);
       border: 1px solid var(--border-subtle);
       transition: var(--transition);
@@ -679,13 +757,13 @@
 
     /* Input Dock */
     .input-dock {
-      padding: 16px 20px;
+      padding: 18px 22px;
       border-bottom: 1px solid var(--border-subtle);
     }
     .input-field-group {
       display: flex;
       align-items: center;
-      background: rgba(8, 12, 22, 0.85);
+      background: rgba(11, 15, 25, 0.9);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-pill);
       padding: 4px 6px 4px 14px;
@@ -693,7 +771,7 @@
     }
     .input-field-group:focus-within {
       border-color: var(--alexa-cyan);
-      box-shadow: 0 0 18px rgba(0, 202, 255, 0.25);
+      box-shadow: 0 0 20px rgba(0, 202, 255, 0.28);
     }
     .voice-dictation-btn {
       background: none;
@@ -717,7 +795,7 @@
     }
     @keyframes micPulse {
       0% { transform: scale(1); filter: drop-shadow(0 0 4px #ef4444); }
-      100% { transform: scale(1.18); filter: drop-shadow(0 0 12px #ef4444); }
+      100% { transform: scale(1.2); filter: drop-shadow(0 0 14px #ef4444); }
     }
 
     .query-input {
@@ -750,15 +828,17 @@
     }
     .send-action-btn:hover {
       transform: scale(1.06);
-      box-shadow: 0 0 20px var(--alexa-cyan-glow);
+      box-shadow: 0 0 22px var(--alexa-cyan-glow);
     }
 
-    /* Prompt Chips */
+    /* ==========================================================================
+       Quick-Prompt Interactive Shelf (Tactile Executive Command Cards)
+       ========================================================================== */
     .chips-dock {
-      padding: 16px 20px;
+      padding: 18px 22px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
     .chips-label {
       font-size: 0.72rem;
@@ -766,45 +846,107 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .chips-grid {
+
+    .shelf-grid {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 9px;
     }
-    .prompt-chip {
+
+    .tactile-command-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 9px 14px;
-      background: rgba(255, 255, 255, 0.03);
+      padding: 10px 14px;
+      background: rgba(30, 41, 59, 0.5);
       border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      font-size: 0.82rem;
-      color: #cbd5e1;
+      border-radius: 12px;
       cursor: pointer;
       transition: var(--transition);
       user-select: none;
     }
-    .prompt-chip:hover {
-      background: rgba(0, 202, 255, 0.08);
-      border-color: rgba(0, 202, 255, 0.4);
-      color: var(--text-main);
+    .tactile-command-card:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: var(--border-highlight);
       transform: translateX(4px);
+      box-shadow: 0 4px 16px rgba(0, 202, 255, 0.12);
     }
+
+    .card-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-icon-wrap {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: rgba(0, 202, 255, 0.1);
+      border: 1px solid rgba(0, 202, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #38bdf8;
+      flex-shrink: 0;
+    }
+
+    .tactile-command-card.card-bedrock .card-icon-wrap {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+    }
+
+    .tactile-command-card.card-rollback .card-icon-wrap {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    .tactile-command-card.card-warp .card-icon-wrap {
+      background: rgba(168, 85, 247, 0.1);
+      border-color: rgba(168, 85, 247, 0.3);
+      color: #c084fc;
+    }
+
+    .card-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .card-title-main {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .card-title-sub {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .card-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .chip-badge {
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       font-family: 'JetBrains Mono', monospace;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.06);
       color: var(--text-muted);
     }
 
-    /* Voice Synthesis Settings Bar */
+    /* Voice Audio Settings Bar */
     .voice-audio-settings {
-      padding: 12px 20px;
-      background: rgba(0, 0, 0, 0.2);
+      padding: 12px 22px;
+      background: rgba(0, 0, 0, 0.25);
       border-top: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
@@ -814,17 +956,17 @@
     }
 
     /* ==========================================================================
-       Column 2: Live Inspection & Protocol Telemetry Deck
+       Column 2: Live Protocol Wire Inspector & Conversational Deck
        ========================================================================== */
     .inspector-deck {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 170px);
-      min-height: 680px;
+      height: calc(100vh - 180px);
+      min-height: 700px;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      backdrop-filter: blur(24px);
+      backdrop-filter: blur(20px);
       box-shadow: var(--shadow-card);
       overflow: hidden;
     }
@@ -832,12 +974,12 @@
     /* Deck Header & Navigation */
     .deck-nav {
       height: 56px;
-      padding: 0 20px;
+      padding: 0 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border-subtle);
-      background: rgba(8, 12, 20, 0.85);
+      background: rgba(11, 15, 25, 0.9);
     }
 
     .tab-pills {
@@ -862,7 +1004,7 @@
     }
     .tab-btn:hover {
       color: var(--text-main);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
     }
     .tab-btn.active {
       background: rgba(0, 202, 255, 0.12);
@@ -878,20 +1020,41 @@
       color: var(--text-main);
     }
 
+    .deck-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.74rem;
+      color: var(--text-dim);
+    }
+
     .btn-copy {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--border-subtle);
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 6px;
       font-size: 0.72rem;
       color: var(--text-muted);
       cursor: pointer;
       transition: var(--transition);
       font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .btn-copy:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.12);
       color: var(--text-main);
+      border-color: var(--border-medium);
+    }
+
+    /* Auto-Scroll Toggle Switch */
+    .autoscroll-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
     }
 
     /* Tab Viewport */
@@ -967,16 +1130,39 @@
     }
 
     .chat-msg.alexa .msg-bubble {
-      background: rgba(18, 26, 44, 0.85);
+      background: rgba(30, 41, 59, 0.85);
       border: 1px solid var(--border-subtle);
       color: #e2e8f0;
       border-bottom-left-radius: 4px;
     }
 
+    /* Skeleton Loader for AI Thinking State */
+    .skeleton-bubble {
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 320px;
+    }
+    .skeleton-line {
+      height: 10px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(0, 202, 255, 0.18) 50%, rgba(255,255,255,0.06) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
     /* Structured Cards in Chat */
     .structured-card {
       margin-top: 12px;
-      background: rgba(10, 15, 26, 0.9);
+      background: rgba(11, 15, 25, 0.92);
       border: 1px solid var(--border-subtle);
       border-radius: 12px;
       padding: 14px;
@@ -985,12 +1171,12 @@
       gap: 10px;
     }
     .structured-card.critical {
-      border-color: rgba(239, 68, 68, 0.4);
-      background: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.06);
     }
     .structured-card.success {
-      border-color: rgba(16, 185, 129, 0.4);
-      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.06);
     }
 
     .telemetry-row {
@@ -999,7 +1185,7 @@
       gap: 8px;
     }
     .telemetry-col {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.35);
       padding: 8px 10px;
       border-radius: 8px;
       display: flex;
@@ -1065,7 +1251,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 16px;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.45);
       border: 1px solid var(--border-subtle);
       border-radius: 10px;
       font-size: 0.76rem;
@@ -1091,11 +1277,11 @@
       display: grid;
       grid-template-rows: 1fr 1fr;
       gap: 16px;
-      min-height: 500px;
+      min-height: 520px;
     }
 
     .code-mirror-box {
-      background: #04060a;
+      background: #060911;
       border: 1px solid var(--border-subtle);
       border-radius: 12px;
       overflow: hidden;
@@ -1109,7 +1295,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.035);
       border-bottom: 1px solid var(--border-subtle);
       font-size: 0.74rem;
       font-weight: 600;
@@ -1130,10 +1316,10 @@
 
     /* JSON Syntax Highlighting */
     .json-key { color: #38bdf8; font-weight: 600; }
-    .json-str { color: #86efac; }
-    .json-num { color: #f59e0b; }
+    .json-str { color: #4ade80; }
+    .json-num { color: #fbbf24; }
     .json-bool { color: #c084fc; font-weight: 700; }
-    .json-null { color: #f43f5e; font-weight: 700; }
+    .json-null { color: #f87171; font-weight: 700; }
 
     /* ==========================================================================
        Command Palette Modal (Raycast / Spotlight Style)
@@ -1141,8 +1327,8 @@
     .cmd-palette-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(14px);
       z-index: 1000;
       display: none;
       align-items: flex-start;
@@ -1156,10 +1342,10 @@
     .cmd-modal {
       width: 100%;
       max-width: 620px;
-      background: rgba(13, 19, 32, 0.95);
-      border: 1px solid rgba(0, 202, 255, 0.35);
+      background: rgba(17, 24, 39, 0.96);
+      border: 1px solid rgba(0, 202, 255, 0.4);
       border-radius: 18px;
-      box-shadow: 0 24px 72px rgba(0, 0, 0, 0.8), 0 0 32px rgba(0, 202, 255, 0.2);
+      box-shadow: 0 24px 72px rgba(0, 0, 0, 0.85), 0 0 36px rgba(0, 202, 255, 0.22);
       overflow: hidden;
       animation: modalSlide 0.2s var(--ease-out);
     }
@@ -1228,9 +1414,9 @@
       bottom: 28px;
       right: 28px;
       padding: 12px 20px;
-      background: rgba(14, 21, 37, 0.95);
+      background: rgba(17, 24, 39, 0.96);
       border: 1px solid var(--alexa-cyan);
-      box-shadow: 0 10px 30px rgba(0, 202, 255, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 202, 255, 0.35);
       border-radius: var(--radius-md);
       color: #ffffff;
       font-size: 0.84rem;
@@ -1248,7 +1434,7 @@
 <body>
 
   <!-- ========================================================================
-       Top Navigation & System Mission Bar
+       Top Navigation & Proof-Points Mission Header
        ======================================================================== -->
   <header>
     <div class="brand-wrap">
@@ -1261,34 +1447,39 @@
         <h1>OpsPulse for Alexa+ <span class="badge-alexa-plus">Alexa+ Preview</span></h1>
         <div class="brand-sub">
           <span>Autonomous SRE Copilot & Canary Rollback Controller</span>
-          <span>•</span>
-          <span style="color: var(--alexa-cyan);">MCP Spec 2025-11-25</span>
         </div>
       </div>
     </div>
 
+    <!-- Executive Proof-Points Indicator Chips -->
     <div class="header-pills">
+      <!-- 1. MCP Transport Proof-Point -->
+      <div class="pill pill-mcp interactive" id="pill-mcp" onclick="checkBackendHealth()" title="Click to verify MCP Server connectivity">
+        <div class="status-dot" id="mcp-dot"></div>
+        <span id="mcp-status-text">MCP Transport: Streamable HTTP (spec 2025-11-25) [ACTIVE]</span>
+      </div>
+
+      <!-- 2. AWS Bedrock Proof-Point -->
+      <div class="pill pill-bedrock" title="Connected to Amazon Bedrock Runtime Claude 3.5 Sonnet">
+        <div class="status-dot amber"></div>
+        <span id="bedrock-status-text">AWS Bedrock: Claude 3.5 Sonnet [READY]</span>
+      </div>
+
+      <!-- 3. Voice Engine Proof-Point -->
+      <div class="pill pill-voice" title="Web Speech Recognition API & Natural Speech Synthesis Active">
+        <div class="status-dot blue"></div>
+        <span>Voice Engine: Web Speech & Natural TTS [ENABLED]</span>
+      </div>
+
       <!-- Command Palette Quick Launcher -->
-      <button class="cmd-palette-btn" onclick="openCommandPalette()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <span>Command Menu</span>
+      <button class="cmd-palette-btn" onclick="openCommandPalette()" title="Open Command Menu (⌘K or Ctrl+K)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>
+        <span>Command</span>
         <span class="cmd-key-badge">⌘K</span>
       </button>
 
-      <!-- MCP Connection Status Pill -->
-      <div class="pill interactive" id="pill-mcp" onclick="checkBackendHealth()">
-        <div class="status-dot" id="mcp-dot"></div>
-        <span id="mcp-status-text">Connected to MCP Server: Streamable HTTP (2025-11-25)</span>
-      </div>
-
-      <!-- AWS Bedrock Pill -->
-      <div class="pill">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        <span id="bedrock-status-text">AWS Bedrock Online</span>
-      </div>
-
       <!-- Synthesized Audio SFX Switch -->
-      <button class="btn-audio-sfx" id="btn-sfx" onclick="toggleAudioSfx()" title="Toggle Web Audio Synthesizer Sound FX">
+      <button class="btn-audio-sfx" id="btn-sfx" onclick="toggleAudioSfx()" title="Toggle Web Audio Synthesizer Cues">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
         </svg>
@@ -1296,7 +1487,7 @@
 
       <!-- Simulation Fallback Toggle -->
       <div class="toggle-wrap" onclick="toggleOfflineMode()" title="Toggle simulated realistic responses when local server is offline">
-        <span>Offline Demo Mode</span>
+        <span>Offline Demo</span>
         <div class="toggle-switch" id="offline-switch">
           <div class="toggle-thumb"></div>
         </div>
@@ -1346,13 +1537,13 @@
     </div>
 
     <div class="mission-clock">
-      <span>UTC:</span>
-      <strong id="live-utc-clock">00:00:00</strong>
+      <span>MISSION CLOCK:</span>
+      <strong id="live-utc-clock">00:00:00 UTC</strong>
     </div>
   </div>
 
   <!-- ========================================================================
-       Main Cockpit View
+       Main Cockpit View (Centered for 1080p / 4K Executive Demos)
        ======================================================================== -->
   <main>
     <!-- Left Column: Alexa+ Voice Center -->
@@ -1362,8 +1553,13 @@
       <div class="card">
         <div class="orb-stage">
           <div class="orb-glow-backdrop" id="orb-backdrop"></div>
+
+          <!-- Expanding Shockwave Rings for LISTENING State -->
+          <div class="sound-ripple-ring"></div>
+          <div class="sound-ripple-ring"></div>
+          <div class="sound-ripple-ring"></div>
           
-          <div class="alexa-orb-wrapper orb-state-idle" id="alexa-orb" onclick="toggleVoiceDictation()">
+          <div class="alexa-orb-wrapper orb-state-idle" id="alexa-orb" onclick="toggleVoiceDictation()" title="Tap to dictate voice command">
             <div class="alexa-outer-ring"></div>
             
             <!-- Acoustic bars for speech/listen simulation -->
@@ -1386,13 +1582,16 @@
             </div>
           </div>
 
+          <!-- Subtle Wave Floor Reflection -->
+          <div class="orb-reflection"></div>
+
           <!-- Dynamic Verbal Transcript -->
           <div class="live-transcript-wrap">
             <div class="transcript-bubble" id="verbal-transcript">
               "Alexa, what's the operational health of payments-service?"
             </div>
             <div class="transcript-hint" id="transcript-hint">
-              Tap the orb or microphone to dictate, or select a prompt below
+              Tap orb or microphone to dictate, press ⌘K for command palette, or select below
             </div>
           </div>
         </div>
@@ -1413,31 +1612,81 @@
           </div>
         </div>
 
-        <!-- Quick Demo Prompt Chips -->
+        <!-- Quick-Prompt Interactive Shelf (Tactile Executive Command Cards) -->
         <div class="chips-dock">
-          <div class="chips-label">Hackathon Demo Quick Prompts</div>
-          <div class="chips-grid">
-            
-            <div class="prompt-chip" onclick="triggerPreset('health')">
-              <span>🔍 "Alexa, check health for payments-service"</span>
-              <span class="chip-badge">get_service_health</span>
+          <div class="chips-label">
+            <span>Executive Demo Presets</span>
+            <span style="font-size: 0.65rem; color: #64748b;">Shortcuts Ctrl+1..4</span>
+          </div>
+          
+          <div class="shelf-grid">
+            <!-- Command Card 1: Check Health -->
+            <div class="tactile-command-card" onclick="triggerPreset('health')">
+              <div class="card-left">
+                <div class="card-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                </div>
+                <div class="card-titles">
+                  <span class="card-title-main">Inspect Service Health</span>
+                  <span class="card-title-sub">Inspect p99 latency, replicas & error alarms</span>
+                </div>
+              </div>
+              <div class="card-right">
+                <span class="chip-badge">get_service_health</span>
+                <span class="cmd-key-badge">^1</span>
+              </div>
             </div>
 
-            <div class="prompt-chip" onclick="triggerPreset('analyze')">
-              <span>⚡ "Alexa, analyze the latest timeout incident log"</span>
-              <span class="chip-badge">analyze_incident_log</span>
+            <!-- Command Card 2: Bedrock AI Diagnostic -->
+            <div class="tactile-command-card card-bedrock" onclick="triggerPreset('analyze')">
+              <div class="card-left">
+                <div class="card-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="card-titles">
+                  <span class="card-title-main">Bedrock Incident Diagnostic</span>
+                  <span class="card-title-sub">Run Claude 3.5 Sonnet root-cause playbook</span>
+                </div>
+              </div>
+              <div class="card-right">
+                <span class="chip-badge" style="color: #fbbf24;">analyze_log</span>
+                <span class="cmd-key-badge">^2</span>
+              </div>
             </div>
 
-            <div class="prompt-chip" onclick="triggerPreset('rollback')">
-              <span>🚨 "Alexa, rollback payments-service to version v2.4.1"</span>
-              <span class="chip-badge">trigger_rollback</span>
+            <!-- Command Card 3: Canary Rollback -->
+            <div class="tactile-command-card card-rollback" onclick="triggerPreset('rollback')">
+              <div class="card-left">
+                <div class="card-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.95 20 14.53 20 13c0-4.42-3.58-8-8-8zm-6 8c0-1.01.25-1.97.7-2.8L5.24 8.74C4.46 10.05 4 11.47 4 13c0 4.42 3.58 8 8 8v4l5-5-5-5v4c-3.31 0-6-2.69-6-6z"/></svg>
+                </div>
+                <div class="card-titles">
+                  <span class="card-title-main">Canary Emergency Rollback</span>
+                  <span class="card-title-sub">Shift ALB weight 100% & revert revision</span>
+                </div>
+              </div>
+              <div class="card-right">
+                <span class="chip-badge" style="color: #f87171;">trigger_rollback</span>
+                <span class="cmd-key-badge">^3</span>
+              </div>
             </div>
 
-            <div class="prompt-chip" onclick="triggerPreset('antigravity')">
-              <span>🚀 "Alexa, import antigravity"</span>
-              <span class="chip-badge">easter_egg</span>
+            <!-- Command Card 4: Antigravity Easter Egg -->
+            <div class="tactile-command-card card-warp" onclick="triggerPreset('antigravity')">
+              <div class="card-left">
+                <div class="card-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5s-4 4.5-4 10.5c0 3.5 2 6 4 6s4-2.5 4-6c0-6-4-10.5-4-10.5zm0 14c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                </div>
+                <div class="card-titles">
+                  <span class="card-title-main">Quantum Antigravity</span>
+                  <span class="card-title-sub">Python 3.14 XKCD #353 levitation easter egg</span>
+                </div>
+              </div>
+              <div class="card-right">
+                <span class="chip-badge" style="color: #c084fc;">easter_egg</span>
+                <span class="cmd-key-badge">^4</span>
+              </div>
             </div>
-
           </div>
         </div>
 
@@ -1471,15 +1720,22 @@
           
           <button class="tab-btn" id="tab-telemetry-btn" onclick="selectTab('telemetry')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-            Live MCP Protocol Telemetry
+            Live MCP Protocol Wire
             <span class="tab-indicator-count" id="mcp-count">1</span>
           </button>
         </div>
 
-        <div style="font-size: 0.74rem; color: var(--text-dim); display: flex; align-items: center; gap: 10px;">
+        <div class="deck-actions">
           <span>Target: <strong id="target-endpoint-label" style="color: #cbd5e1;">http://localhost:8000/mcp</strong></span>
-          <button class="btn-copy" onclick="exportIncidentPostMortem()" title="Download SRE Incident Post-Mortem in Markdown">Export Report</button>
-          <button class="btn-copy" onclick="clearLogs()">Clear Logs</button>
+          <label class="autoscroll-toggle" title="Auto-scroll telemetry views">
+            <input type="checkbox" id="autoscroll-toggle" checked style="accent-color: var(--alexa-cyan);">
+            <span>Auto-Scroll</span>
+          </label>
+          <button class="btn-copy" onclick="exportIncidentPostMortem()" title="Download SRE Incident Post-Mortem in Markdown">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            <span>Export Report</span>
+          </button>
+          <button class="btn-copy" onclick="clearLogs()">Clear</button>
         </div>
       </div>
 
@@ -1516,7 +1772,7 @@
                 <span class="meta-badge" style="color: #38bdf8;">Transport: SSE / Streamable HTTP</span>
               </div>
               <div id="telemetry-timing" style="font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;">
-                Latency: <strong style="color: var(--status-emerald);">0 ms</strong>
+                Round-Trip: <strong style="color: var(--status-emerald);">⚡ 0 ms</strong>
               </div>
             </div>
 
@@ -1525,7 +1781,7 @@
               <div class="code-mirror-box">
                 <div class="code-box-header">
                   <span>Outbound MCP JSON-RPC Payload (Client Request)</span>
-                  <button class="btn-copy" onclick="copyCode('jsonrpc-req-viewer')">Copy Request</button>
+                  <button class="btn-copy" id="btn-copy-req" onclick="copyCode('jsonrpc-req-viewer', 'btn-copy-req')">Copy Request</button>
                 </div>
                 <div class="code-viewer" id="jsonrpc-req-viewer">// Outbound JSON-RPC requests will appear here in real-time...</div>
               </div>
@@ -1533,7 +1789,7 @@
               <div class="code-mirror-box">
                 <div class="code-box-header">
                   <span>Inbound MCP Tool Execution Result (Streamable Response / SSE)</span>
-                  <button class="btn-copy" onclick="copyCode('jsonrpc-res-viewer')">Copy Response</button>
+                  <button class="btn-copy" id="btn-copy-res" onclick="copyCode('jsonrpc-res-viewer', 'btn-copy-res')">Copy Response</button>
                 </div>
                 <div class="code-viewer" id="jsonrpc-res-viewer">// Inbound tool results will stream here in real-time...</div>
               </div>
@@ -1626,7 +1882,7 @@
           gain.connect(this.ctx.destination);
 
           if (type === "listen") {
-            // High crisp double-pip
+            // High crisp double-pip on mic start
             osc.type = "sine";
             osc.frequency.setValueAtTime(880, now);
             osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
@@ -1634,8 +1890,17 @@
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
             osc.start(now);
             osc.stop(now + 0.15);
+          } else if (type === "listen_end") {
+            // Soft tactile acknowledgment click
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(420, now + 0.08);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+            osc.start(now);
+            osc.stop(now + 0.10);
           } else if (type === "success") {
-            // Ascending major chord
+            // Ascending major chord on successful tool / rollback
             osc.type = "triangle";
             osc.frequency.setValueAtTime(523.25, now); // C5
             osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
@@ -1645,7 +1910,7 @@
             osc.start(now);
             osc.stop(now + 0.36);
           } else if (type === "alert") {
-            // Urgent dual siren
+            // Urgent dual siren on SEV-1 diagnostic
             osc.type = "sawtooth";
             osc.frequency.setValueAtTime(440, now);
             osc.frequency.setValueAtTime(330, now + 0.12);
@@ -1654,7 +1919,7 @@
             osc.start(now);
             osc.stop(now + 0.32);
           } else if (type === "warp") {
-            // Resonant space sweep
+            // Resonant space sweep on antigravity easter egg
             osc.type = "sine";
             osc.frequency.setValueAtTime(220, now);
             osc.frequency.exponentialRampToValueAtTime(1760, now + 0.6);
@@ -1854,6 +2119,7 @@
 
         if (final) {
           stopListening();
+          SoundEngine.playChime("listen_end");
           processVoiceCommand(final.trim());
         }
       };
@@ -1861,6 +2127,7 @@
       state.speechRecognition.onerror = (event) => {
         console.warn("Speech recognition error:", event.error);
         stopListening();
+        SoundEngine.playChime("listen_end");
         showToast("Voice recognition notice: " + event.error);
       };
 
@@ -1882,6 +2149,7 @@
       if (state.isListening) {
         state.speechRecognition.stop();
         stopListening();
+        SoundEngine.playChime("listen_end");
       } else {
         window.speechSynthesis.cancel();
         try {
@@ -1948,7 +2216,7 @@
     }
 
     // ========================================================================
-    // Visual Orb Controller
+    // Visual Orb Controller (Seamless Multi-State Transitions)
     // ========================================================================
     function setOrbState(status) {
       const orb = document.getElementById("alexa-orb");
@@ -1958,11 +2226,13 @@
 
       const backdrop = document.getElementById("orb-backdrop");
       if (status === "thinking") {
-        backdrop.style.background = "radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, transparent 68%)";
+        backdrop.style.background = "radial-gradient(circle, rgba(168, 85, 247, 0.48) 0%, transparent 68%)";
       } else if (status === "speaking") {
-        backdrop.style.background = "radial-gradient(circle, rgba(52, 211, 153, 0.45) 0%, transparent 68%)";
+        backdrop.style.background = "radial-gradient(circle, rgba(52, 211, 153, 0.48) 0%, transparent 68%)";
       } else if (status === "antigravity") {
-        backdrop.style.background = "radial-gradient(circle, rgba(236, 72, 153, 0.6) 0%, transparent 68%)";
+        backdrop.style.background = "radial-gradient(circle, rgba(236, 72, 153, 0.65) 0%, transparent 68%)";
+      } else if (status === "listening") {
+        backdrop.style.background = "radial-gradient(circle, rgba(56, 189, 248, 0.55) 0%, transparent 68%)";
       } else {
         backdrop.style.background = "radial-gradient(circle, var(--alexa-cyan-glow) 0%, transparent 68%)";
       }
@@ -2015,6 +2285,9 @@
       appendChatBubble("user", commandText);
       updateVerbalTranscript(`"${commandText}"`, "Dispatching MCP tool call via Streamable HTTP (2025-11-25)...");
       setOrbState("thinking");
+
+      // Insert inline AI thinking skeleton loader
+      const skeletonId = appendSkeletonLoader();
 
       // Extract service name from utterance or default
       let targetService = "payments-service";
@@ -2079,7 +2352,7 @@
 
           resultData = await response.json();
           const latency = Math.round(performance.now() - t0);
-          document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-emerald);">${latency} ms</strong>`;
+          document.getElementById("telemetry-timing").innerHTML = `Round-Trip: <strong style="color: var(--status-emerald);">⚡ ${latency} ms</strong>`;
           
           const toolContentRaw = resultData?.result?.content?.[0]?.text;
           const parsed = toolContentRaw ? JSON.parse(toolContentRaw) : resultData;
@@ -2095,14 +2368,17 @@
           showToast("Live server unreachable: Using High-Fidelity Simulation");
           resultData = OFFLINE_FIXTURES[fixtureKey].response;
           speechText = OFFLINE_FIXTURES[fixtureKey].speechText;
-          document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-amber);">Simulated 42ms</strong>`;
+          document.getElementById("telemetry-timing").innerHTML = `Round-Trip: <strong style="color: var(--status-amber);">⚡ Simulated 38ms</strong>`;
         }
       } else {
         await new Promise(r => setTimeout(r, 600));
         resultData = OFFLINE_FIXTURES[fixtureKey].response;
         speechText = OFFLINE_FIXTURES[fixtureKey].speechText;
-        document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-amber);">Offline Demo (38ms)</strong>`;
+        document.getElementById("telemetry-timing").innerHTML = `Round-Trip: <strong style="color: var(--status-amber);">⚡ Offline Demo (36ms)</strong>`;
       }
+
+      // Remove skeleton loader
+      removeSkeletonLoader(skeletonId);
 
       displayJsonRpcResponse(resultData);
       appendAlexaResponseCard(toolName, resultData, speechText);
@@ -2114,10 +2390,37 @@
       } else if (toolName === "analyze_incident_log") {
         SoundEngine.playChime("alert");
       } else {
-        SoundEngine.playChime("listen");
+        SoundEngine.playChime("success");
       }
 
       speakAlexaResponse(speechText);
+    }
+
+    function appendSkeletonLoader() {
+      const stream = document.getElementById("chat-stream");
+      const id = `skeleton-${Date.now()}`;
+      const msg = document.createElement("div");
+      msg.className = "chat-msg alexa";
+      msg.id = id;
+      msg.innerHTML = `
+        <div class="msg-header">
+          <span style="color: var(--alexa-cyan); font-weight: 700;">Alexa+ Reasoning Engine</span>
+          <span>• Awaiting MCP Protocol Response...</span>
+        </div>
+        <div class="skeleton-bubble">
+          <div class="skeleton-line" style="width: 50%;"></div>
+          <div class="skeleton-line" style="width: 90%;"></div>
+          <div class="skeleton-line" style="width: 70%;"></div>
+        </div>
+      `;
+      stream.appendChild(msg);
+      maybeScrollToBottom(stream);
+      return id;
+    }
+
+    function removeSkeletonLoader(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
     }
 
     function updateFleetStatus(svcName, status, metricText) {
@@ -2193,13 +2496,13 @@
           <span style="color: var(--status-emerald); font-weight: 700;">Alexa+ Easter Egg</span>
           <span>• Antigravity Engine</span>
         </div>
-        <div class="msg-bubble" style="background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.45);">
+        <div class="msg-bubble" style="background: rgba(168, 85, 247, 0.14); border: 1px solid rgba(168, 85, 247, 0.45);">
           🚀 <strong>Antigravity module loaded!</strong> The Alexa+ orb has engaged gravity neutralization fields.<br>
           <em style="color: #cbd5e1;">"I wrote 20 lines of code and now I'm flying!"</em> — Python / XKCD 353
         </div>
       `;
       stream.appendChild(msg);
-      stream.scrollTop = stream.scrollHeight;
+      maybeScrollToBottom(stream);
 
       speakAlexaResponse(easterText, () => {
         setTimeout(() => setOrbState("idle"), 2500);
@@ -2221,7 +2524,7 @@
         <div class="msg-bubble">${escapeHtml(text)}</div>
       `;
       stream.appendChild(msg);
-      stream.scrollTop = stream.scrollHeight;
+      maybeScrollToBottom(stream);
       updateChatCount();
     }
 
@@ -2335,8 +2638,15 @@
         </div>
       `;
       stream.appendChild(msg);
-      stream.scrollTop = stream.scrollHeight;
+      maybeScrollToBottom(stream);
       updateChatCount();
+    }
+
+    function maybeScrollToBottom(el) {
+      const autoscroll = document.getElementById("autoscroll-toggle");
+      if (!autoscroll || autoscroll.checked) {
+        el.scrollTop = el.scrollHeight;
+      }
     }
 
     function updateChatCount() {
@@ -2348,10 +2658,14 @@
       document.getElementById("telemetry-method-tag").textContent = `METHOD: ${payload.method} (${payload.params?.name || ''})`;
       document.getElementById("jsonrpc-req-viewer").innerHTML = syntaxHighlightJson(JSON.stringify(payload, null, 2));
       document.getElementById("mcp-count").textContent = state.messageCounter;
+      const viewer = document.getElementById("jsonrpc-req-viewer");
+      maybeScrollToBottom(viewer);
     }
 
     function displayJsonRpcResponse(payload) {
       document.getElementById("jsonrpc-res-viewer").innerHTML = syntaxHighlightJson(JSON.stringify(payload, null, 2));
+      const viewer = document.getElementById("jsonrpc-res-viewer");
+      maybeScrollToBottom(viewer);
     }
 
     function syntaxHighlightJson(jsonStr) {
@@ -2403,10 +2717,16 @@
       showToast("Logs and conversation cleared");
     }
 
-    function copyCode(elementId) {
+    function copyCode(elementId, btnId) {
       const text = document.getElementById(elementId).innerText;
       navigator.clipboard.writeText(text).then(() => {
         showToast("JSON payload copied to clipboard");
+        if (btnId) {
+          const btn = document.getElementById(btnId);
+          const orig = btn.innerText;
+          btn.innerText = "Copied! ✓";
+          setTimeout(() => { btn.innerText = orig; }, 2000);
+        }
       }).catch(err => {
         showToast("Copy failed: " + err);
       });
@@ -2421,11 +2741,11 @@
       sw.classList.toggle("active", state.isOfflineMode);
       if (state.isOfflineMode) {
         dot.classList.add("offline");
-        text.textContent = "Offline Demo Mode Active (Simulated Streamable HTTP)";
+        text.textContent = "MCP Transport: Offline Demo Simulation [ACTIVE]";
         showToast("Offline Demo Mode: ON (Safe for offline demo recording)");
       } else {
         dot.classList.remove("offline");
-        text.textContent = "Connected to MCP Server: Streamable HTTP (2025-11-25)";
+        text.textContent = "MCP Transport: Streamable HTTP (spec 2025-11-25) [ACTIVE]";
         checkBackendHealth();
         showToast("Connecting to live local MCP backend...");
       }
@@ -2439,14 +2759,14 @@
         const res = await fetch(`${CONFIG.backendBase}/health`, { signal: AbortSignal.timeout(2000) });
         if (res.ok) {
           dot.classList.remove("offline");
-          text.textContent = "Connected to MCP Server: Streamable HTTP (2025-11-25)";
+          text.textContent = "MCP Transport: Streamable HTTP (spec 2025-11-25) [ACTIVE]";
           showToast("Connected to live backend on port 8000!");
         } else {
           throw new Error("Non-200 response");
         }
       } catch (err) {
         dot.classList.add("offline");
-        text.textContent = "MCP Server: Offline (Toggle 'Offline Demo Mode' to simulate)";
+        text.textContent = "MCP Server: Offline (Toggle 'Offline Demo' to simulate)";
       }
     }
 
@@ -2599,13 +2919,31 @@ ${(reportData.remediation_playbook || []).map(s => `- ${s}`).join('\n')}
         }
       });
 
-      // Global Keyboard Shortcut: ⌘K or Ctrl+K for Command Palette
+      // Global Keyboard Shortcuts
       window.addEventListener("keydown", (e) => {
+        // ⌘K or Ctrl+K for Command Palette
         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
           e.preventDefault();
           openCommandPalette();
         } else if (e.key === "Escape") {
           closeCommandPalette();
+        }
+
+        // Ctrl+1, Ctrl+2, Ctrl+3, Ctrl+4 for quick demo presets
+        if (e.ctrlKey || e.metaKey) {
+          if (e.key === "1") {
+            e.preventDefault();
+            triggerPreset("health");
+          } else if (e.key === "2") {
+            e.preventDefault();
+            triggerPreset("analyze");
+          } else if (e.key === "3") {
+            e.preventDefault();
+            triggerPreset("rollback");
+          } else if (e.key === "4") {
+            e.preventDefault();
+            triggerPreset("antigravity");
+          }
         }
       });
     });
