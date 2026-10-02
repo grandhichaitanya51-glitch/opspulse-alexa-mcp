@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpsPulse for Alexa+ | Autonomous SRE Voice Cockpit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       Design System & Variables (Alexa Modern Dark Identity)
+       ========================================================================== */
+    :root {
+      --bg-base: #07090e;
+      --bg-surface: #0e131f;
+      --bg-surface-elevated: #141b2d;
+      --bg-card: rgba(18, 26, 44, 0.72);
+      --bg-card-hover: rgba(26, 38, 64, 0.88);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(0, 202, 255, 0.45);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      /* Alexa Brand Palette */
+      --alexa-cyan: #00caff;
+      --alexa-cyan-glow: rgba(0, 202, 255, 0.35);
+      --alexa-blue: #0077b6;
+      --alexa-indigo: #4f46e5;
+      --alexa-purple: #9333ea;
+      
+      /* Status Colors */
+      --status-emerald: #10b981;
+      --status-emerald-glow: rgba(16, 185, 129, 0.3);
+      --status-amber: #f59e0b;
+      --status-amber-glow: rgba(245, 158, 11, 0.3);
+      --status-crimson: #ef4444;
+      --status-crimson-glow: rgba(239, 68, 68, 0.3);
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-pill: 9999px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --transition: all 0.24s var(--ease-out);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 202, 255, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 90% 80%, rgba(79, 70, 229, 0.07) 0%, transparent 45%),
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* ==========================================================================
+       Header & Real-Time Status Bar
+       ========================================================================== */
+    header {
+      height: 74px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(7, 9, 14, 0.88);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00caff 0%, #0077b6 50%, #4f46e5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px var(--alexa-cyan-glow);
+      position: relative;
+    }
+
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+
+    .brand-text h1 {
+      font-size: 1.22rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-alexa-plus {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, rgba(0, 202, 255, 0.2) 0%, rgba(79, 70, 229, 0.25) 100%);
+      color: #38bdf8;
+      border: 1px solid rgba(0, 202, 255, 0.45);
+      box-shadow: 0 0 12px rgba(0, 202, 255, 0.2);
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .header-pills {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .pill.interactive:hover {
+      border-color: var(--border-active);
+      cursor: pointer;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--status-emerald);
+      box-shadow: 0 0 8px var(--status-emerald);
+      animation: pulseGlow 2s infinite;
+    }
+
+    .status-dot.offline {
+      background: var(--status-amber);
+      box-shadow: 0 0 8px var(--status-amber);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Simulation Mode Toggle */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      width: 34px;
+      height: 18px;
+      background: #1e293b;
+      border-radius: var(--radius-pill);
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .toggle-switch.active {
+      background: var(--alexa-cyan);
+    }
+
+    .toggle-thumb {
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: var(--transition);
+    }
+
+    .toggle-switch.active .toggle-thumb {
+      left: 18px;
+      background: #000;
+    }
+
+    /* ==========================================================================
+       App Layout: Split Cockpit Architecture
+       ========================================================================== */
+    main {
+      flex: 1;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 32px 32px;
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      gap: 28px;
+      height: calc(100vh - 74px);
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       Left Column: Alexa+ Voice Center & Prompt Engine
+       ========================================================================== */
+    .voice-console {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .voice-console::-webkit-scrollbar {
+      width: 5px;
+    }
+    .voice-console::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 202, 255, 0.3), transparent);
+    }
+
+    /* Alexa Orb Canvas & Container */
+    .orb-stage {
+      padding: 34px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .orb-glow-backdrop {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--alexa-cyan-glow) 0%, transparent 70%);
+      filter: blur(28px);
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .alexa-orb-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: transform 0.4s var(--ease-out);
+    }
+
+    .alexa-orb-wrapper:hover {
+      transform: scale(1.04);
+    }
+
+    /* Outer Ring */
+    .alexa-outer-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #00caff, #0077b6, #4f46e5, #9333ea, #00caff);
+      box-shadow: 0 0 35px var(--alexa-cyan-glow);
+      transition: var(--transition);
+      animation: rotateRing 6s linear infinite;
+    }
+
+    /* Acoustic Wave Bars */
+    .acoustic-wave-container {
+      position: absolute;
+      inset: -14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .wave-bar {
+      width: 3px;
+      height: 20px;
+      border-radius: 3px;
+      background: var(--alexa-cyan);
+      box-shadow: 0 0 8px var(--alexa-cyan);
+    }
+
+    /* Inner Sphere */
+    .alexa-inner-sphere {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #1e293b 0%, #0a0f1d 75%, #05070c 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      box-shadow: inset 0 2px 12px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.8);
+    }
+
+    .alexa-orb-icon {
+      width: 42px;
+      height: 42px;
+      fill: var(--alexa-cyan);
+      filter: drop-shadow(0 0 10px var(--alexa-cyan-glow));
+      transition: var(--transition);
+    }
+
+    .alexa-state-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--alexa-cyan);
+      margin-top: 4px;
+      opacity: 0.9;
+    }
+
+    /* Orb Animations per State */
+    /* 1. IDLE */
+    .orb-state-idle .alexa-outer-ring {
+      animation: rotateRing 8s linear infinite, idleBreathe 3.5s ease-in-out infinite;
+    }
+
+    /* 2. LISTENING */
+    .orb-state-listening .alexa-outer-ring {
+      animation: rotateRing 1.8s linear infinite;
+      box-shadow: 0 0 50px rgba(0, 202, 255, 0.7);
+    }
+    .orb-state-listening .alexa-orb-icon {
+      fill: #ffffff;
+      transform: scale(1.15);
+    }
+    .orb-state-listening .acoustic-wave-container {
+      opacity: 1;
+    }
+    .orb-state-listening .wave-bar {
+      animation: acousticDance 0.5s ease-in-out infinite alternate;
+    }
+
+    /* 3. THINKING (MCP Execution) */
+    .orb-state-thinking .alexa-outer-ring {
+      animation: rotateRing 0.8s linear infinite;
+      background: conic-gradient(from 0deg, #9333ea, #00caff, #f59e0b, #9333ea);
+      box-shadow: 0 0 50px rgba(147, 51, 234, 0.6);
+    }
+
+    /* 4. SPEAKING */
+    .orb-state-speaking .alexa-outer-ring {
+      animation: rotateRing 3s linear infinite;
+      box-shadow: 0 0 60px rgba(0, 202, 255, 0.8);
+    }
+    .orb-state-speaking .acoustic-wave-container {
+      opacity: 1;
+    }
+    .orb-state-speaking .wave-bar {
+      animation: acousticDance 0.35s ease-in-out infinite alternate;
+    }
+
+    /* 5. ANTIGRAVITY (Easter Egg) */
+    .orb-state-antigravity {
+      animation: levitateOrb 2.5s ease-in-out infinite;
+    }
+    .orb-state-antigravity .alexa-outer-ring {
+      background: conic-gradient(from 0deg, #10b981, #00caff, #ec4899, #10b981);
+      box-shadow: 0 0 60px rgba(16, 185, 129, 0.8);
+      animation: rotateRing 1s linear infinite;
+    }
+
+    @keyframes rotateRing {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes idleBreathe {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--alexa-cyan-glow); }
+      50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(0, 202, 255, 0.55); }
+    }
+
+    @keyframes acousticDance {
+      0% { height: 10px; opacity: 0.3; }
+      100% { height: 42px; opacity: 1; }
+    }
+
+    @keyframes levitateOrb {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-24px) rotate(8deg); }
+    }
+
+    /* Verbal Transcript Box */
+    .live-transcript-wrap {
+      width: 100%;
+      min-height: 58px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .transcript-bubble {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      line-height: 1.5;
+      max-width: 90%;
+      transition: var(--transition);
+    }
+
+    .transcript-hint {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+    }
+
+    /* Interaction Input Bar */
+    .input-dock {
+      padding: 0 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-field-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .voice-dictation-btn {
+      position: absolute;
+      left: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 202, 255, 0.12);
+      border: 1px solid rgba(0, 202, 255, 0.3);
+      color: var(--alexa-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      z-index: 5;
+    }
+
+    .voice-dictation-btn:hover {
+      background: var(--alexa-cyan);
+      color: #000;
+      transform: scale(1.08);
+      box-shadow: 0 0 16px var(--alexa-cyan-glow);
+    }
+
+    .voice-dictation-btn.recording {
+      background: var(--status-crimson);
+      color: #fff;
+      border-color: var(--status-crimson);
+      animation: pulseGlow 1s infinite;
+    }
+
+    .query-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 54px 0 54px;
+      background: rgba(8, 12, 20, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .query-input:focus {
+      border-color: var(--alexa-cyan);
+      background: rgba(10, 16, 28, 0.95);
+      box-shadow: 0 0 20px var(--alexa-cyan-glow);
+    }
+
+    .send-action-btn {
+      position: absolute;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--alexa-cyan);
+      color: #000;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .send-action-btn:hover {
+      background: #38bdf8;
+      transform: scale(1.06);
+    }
+
+    /* Quick Prompt Chips */
+    .chips-dock {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 20px 20px;
+    }
+
+    .chips-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .chips-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+    }
+
+    .prompt-chip {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .prompt-chip:hover {
+      background: rgba(0, 202, 255, 0.09);
+      border-color: var(--alexa-cyan);
+      color: var(--alexa-cyan);
+      transform: translateX(4px);
+    }
+
+    .chip-badge {
+      font-size: 0.66rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-dim);
+    }
+
+    .prompt-chip:hover .chip-badge {
+      background: rgba(0, 202, 255, 0.2);
+      color: #38bdf8;
+    }
+
+    /* Voice Audio Toggle Footer */
+    .voice-audio-settings {
+      padding: 14px 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       Right Column: Live Inspection & Protocol Telemetry Deck
+       ========================================================================== */
+    .inspector-deck {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Deck Tabs */
+    .deck-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    .tab-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 8px 18px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      border-color: var(--border-active);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 202, 255, 0.16) 0%, rgba(79, 70, 229, 0.2) 100%);
+      color: var(--alexa-cyan);
+      border-color: var(--alexa-cyan);
+      box-shadow: 0 0 16px rgba(0, 202, 255, 0.2);
+    }
+
+    .tab-indicator-count {
+      background: rgba(0, 202, 255, 0.2);
+      color: var(--alexa-cyan);
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 1px 6px;
+      border-radius: 9999px;
+    }
+
+    /* Tab Content Containers */
+    .tab-viewport {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .view-pane {
+      display: none;
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .view-pane.active {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .view-pane::-webkit-scrollbar {
+      width: 5px;
+    }
+    .view-pane::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    /* Conversation Stream View */
+    .chat-bubble-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 24px;
+    }
+
+    .chat-msg {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 90%;
+      animation: fadeInSlide 0.3s var(--ease-out);
+    }
+
+    .chat-msg.user {
+      align-self: flex-end;
+    }
+
+    .chat-msg.alexa {
+      align-self: flex-start;
+      max-width: 96%;
+    }
+
+    .msg-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      color: var(--text-dim);
+    }
+
+    .msg-bubble {
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .chat-msg.user .msg-bubble {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
+    }
+
+    .chat-msg.alexa .msg-bubble {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: #f1f5f9;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Structured Response Cards inside Alexa Messages */
+    .structured-card {
+      margin-top: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .structured-card.critical {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.06);
+    }
+
+    .structured-card.success {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .telemetry-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .telemetry-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .telemetry-label {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .telemetry-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    /* Live MCP Protocol Telemetry Pane */
+    .telemetry-pane-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      height: 100%;
+    }
+
+    .telemetry-meta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-size: 0.78rem;
+    }
+
+    .meta-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .proto-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      background: rgba(0, 202, 255, 0.12);
+      color: var(--alexa-cyan);
+      border: 1px solid rgba(0, 202, 255, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .code-mirror-box {
+      flex: 1;
+      background: #060911;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    .code-box-header {
+      padding: 10px 16px;
+      background: #0b101d;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .btn-copy {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-copy:hover {
+      color: var(--alexa-cyan);
+      border-color: var(--alexa-cyan);
+    }
+
+    .code-viewer {
+      flex: 1;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    /* JSON Syntax Coloring */
+    .json-key { color: #38bdf8; }
+    .json-str { color: #a5f3fc; }
+    .json-num { color: #f59e0b; }
+    .json-bool { color: #ec4899; }
+    .json-null { color: #94a3b8; }
+
+    @keyframes fadeInSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Toast Notification */
+    #cockpit-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      background: #0d1527;
+      border: 1px solid var(--alexa-cyan);
+      box-shadow: 0 10px 30px var(--alexa-cyan-glow);
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      color: #fff;
+      display: none;
+      z-index: 1000;
+      animation: fadeInSlide 0.25s var(--ease-out);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       Top Navigation & System Status Header
+       ======================================================================== -->
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>OpsPulse for Alexa+ <span class="badge-alexa-plus">Alexa+ Preview</span></h1>
+        <div class="brand-sub">Autonomous SRE Copilot & Canary Rollback Controller</div>
+      </div>
+    </div>
+
+    <div class="header-pills">
+      <!-- MCP Connection Status Pill -->
+      <div class="pill interactive" id="pill-mcp" onclick="checkBackendHealth()">
+        <div class="status-dot" id="mcp-dot"></div>
+        <span id="mcp-status-text">Connected to MCP Server: Streamable HTTP (2025-11-25)</span>
+      </div>
+
+      <!-- AWS Bedrock Indicator -->
+      <div class="pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span id="bedrock-status-text">AWS Bedrock Online</span>
+      </div>
+
+      <!-- Simulation Fallback Toggle -->
+      <div class="toggle-wrap" onclick="toggleOfflineMode()" title="Toggle simulated realistic responses when local server is offline">
+        <span>Offline Demo Mode</span>
+        <div class="toggle-switch" id="offline-switch">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       Main Cockpit View
+       ======================================================================== -->
+  <main>
+    <!-- Left Column: Alexa+ Voice Center -->
+    <div class="voice-console">
+      
+      <!-- Alexa Voice Orb Stage Card -->
+      <div class="card">
+        <div class="orb-stage">
+          <div class="orb-glow-backdrop" id="orb-backdrop"></div>
+          
+          <div class="alexa-orb-wrapper orb-state-idle" id="alexa-orb" onclick="toggleVoiceDictation()">
+            <div class="alexa-outer-ring"></div>
+            
+            <!-- Acoustic bars for speech/listen simulation -->
+            <div class="acoustic-wave-container">
+              <div class="wave-bar" style="animation-delay: 0.1s"></div>
+              <div class="wave-bar" style="animation-delay: 0.3s"></div>
+              <div class="wave-bar" style="animation-delay: 0.15s"></div>
+              <div class="wave-bar" style="animation-delay: 0.4s"></div>
+              <div class="wave-bar" style="animation-delay: 0.2s"></div>
+              <div class="wave-bar" style="animation-delay: 0.35s"></div>
+              <div class="wave-bar" style="animation-delay: 0.25s"></div>
+            </div>
+
+            <div class="alexa-inner-sphere">
+              <svg class="alexa-orb-icon" viewBox="0 0 24 24">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+              </svg>
+              <div class="alexa-state-label" id="orb-state-label">IDLE</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Verbal Transcript -->
+          <div class="live-transcript-wrap">
+            <div class="transcript-bubble" id="verbal-transcript">
+              "Alexa, what's the operational health of payments-service?"
+            </div>
+            <div class="transcript-hint" id="transcript-hint">
+              Tap the orb or microphone to dictate, or select a prompt below
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Bar (Speech + Keyboard Fallback) -->
+        <div class="input-dock">
+          <div class="input-field-group">
+            <button class="voice-dictation-btn" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictate query via Web Speech API">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+              </svg>
+            </button>
+            <input type="text" class="query-input" id="query-input" placeholder="Ask Alexa+ or enter an SRE voice command...">
+            <button class="send-action-btn" onclick="handleInputSubmit()" title="Execute MCP tool call">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Demo Prompt Chips -->
+        <div class="chips-dock">
+          <div class="chips-label">Hackathon Demo Quick Prompts</div>
+          <div class="chips-grid">
+            
+            <div class="prompt-chip" onclick="triggerPreset('health')">
+              <span>🔍 "Alexa, check health for payments-service"</span>
+              <span class="chip-badge">get_service_health</span>
+            </div>
+
+            <div class="prompt-chip" onclick="triggerPreset('analyze')">
+              <span>⚡ "Alexa, analyze the latest timeout incident log"</span>
+              <span class="chip-badge">analyze_incident_log</span>
+            </div>
+
+            <div class="prompt-chip" onclick="triggerPreset('rollback')">
+              <span>🚨 "Alexa, rollback payments-service to version v2.4.1"</span>
+              <span class="chip-badge">trigger_rollback</span>
+            </div>
+
+            <div class="prompt-chip" onclick="triggerPreset('antigravity')">
+              <span>🚀 "Alexa, import antigravity"</span>
+              <span class="chip-badge">easter_egg</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Voice Synthesis Settings -->
+        <div class="voice-audio-settings">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--alexa-cyan)"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            <span>Alexa Synthetic Speech (TTS)</span>
+          </div>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="tts-toggle" checked style="accent-color: var(--alexa-cyan);">
+            <span>Enable Audio Playback</span>
+          </label>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Column: Live Inspection & Protocol Telemetry Deck -->
+    <div class="inspector-deck">
+      
+      <!-- Top Deck Navigation -->
+      <div class="deck-nav">
+        <div class="tab-pills">
+          <button class="tab-btn active" id="tab-conv-btn" onclick="selectTab('conv')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            Conversational Transcript
+            <span class="tab-indicator-count" id="conv-count">2</span>
+          </button>
+          
+          <button class="tab-btn" id="tab-telemetry-btn" onclick="selectTab('telemetry')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            Live MCP Protocol Telemetry
+            <span class="tab-indicator-count" id="mcp-count">1</span>
+          </button>
+        </div>
+
+        <div style="font-size: 0.74rem; color: var(--text-dim); display: flex; align-items: center; gap: 10px;">
+          <span>Target: <strong id="target-endpoint-label" style="color: #cbd5e1;">http://localhost:8000/mcp</strong></span>
+          <button class="btn-copy" onclick="clearLogs()">Clear Logs</button>
+        </div>
+      </div>
+
+      <!-- Tab Viewport -->
+      <div class="tab-viewport">
+        
+        <!-- PANE 1: Conversational Stream -->
+        <div class="view-pane active" id="pane-conv">
+          <div class="chat-bubble-stream" id="chat-stream">
+            
+            <!-- Welcome message from Alexa+ -->
+            <div class="chat-msg alexa">
+              <div class="msg-header">
+                <span style="color: var(--alexa-cyan); font-weight: 700;">Alexa+ SRE Copilot</span>
+                <span>• Live Streamable HTTP Session Initialized</span>
+              </div>
+              <div class="msg-bubble">
+                Good afternoon. I'm connected to the <strong>OpsPulse Model Context Protocol (MCP)</strong> server over Streamable HTTP (spec version 2025-11-25). 
+                I can inspect microservice telemetry, invoke <strong>Amazon Bedrock Claude 3.5 Sonnet</strong> to diagnose incident logs, and execute automated canary rollbacks. How can I assist?
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANE 2: Live MCP Protocol Telemetry Inspector -->
+        <div class="view-pane" id="pane-telemetry">
+          <div class="telemetry-pane-container">
+            
+            <div class="telemetry-meta-bar">
+              <div class="meta-badge-group">
+                <span class="proto-tag">SPEC: 2025-11-25</span>
+                <span class="proto-tag">TRANSPORT: Streamable HTTP / SSE</span>
+                <span id="telemetry-method-tag" class="proto-tag" style="color: #a78bfa; border-color: rgba(167, 139, 250, 0.4);">METHOD: tools/call</span>
+              </div>
+              <div style="color: var(--text-dim); font-size: 0.75rem;" id="telemetry-timing">
+                Latency: <strong style="color: var(--status-emerald);">-- ms</strong>
+              </div>
+            </div>
+
+            <!-- Outgoing JSON-RPC 2.0 Request -->
+            <div class="code-mirror-box" style="flex: 0 0 38%;">
+              <div class="code-box-header">
+                <span>Outgoing JSON-RPC 2.0 Request (POST /mcp/message)</span>
+                <button class="btn-copy" onclick="copyCode('jsonrpc-req-viewer')">Copy JSON</button>
+              </div>
+              <div class="code-viewer" id="jsonrpc-req-viewer">// Waiting for outbound tool execution payload...</div>
+            </div>
+
+            <!-- Incoming MCP Tool Response Payload -->
+            <div class="code-mirror-box" style="flex: 1;">
+              <div class="code-box-header">
+                <span>Inbound MCP Tool Execution Result (Streamable Response / SSE)</span>
+                <button class="btn-copy" onclick="copyCode('jsonrpc-res-viewer')">Copy Response</button>
+              </div>
+              <div class="code-viewer" id="jsonrpc-res-viewer">// Inbound tool results will stream here in real-time...</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div id="cockpit-toast"></div>
+
+  <!-- ========================================================================
+       Vanilla JavaScript Client Logic
+       ======================================================================== -->
+  <script>
+    // Dynamic Base Resolution (supports direct web serving, reverse proxies, and local file:// previews)
+    const resolveBackendBase = () => {
+      if (typeof window !== "undefined" && window.location && window.location.origin) {
+        if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+          return window.location.origin;
+        }
+      }
+      return "http://localhost:8000";
+    };
+
+    const backendBase = resolveBackendBase();
+
+    // Configuration & State
+    const CONFIG = {
+      backendBase: backendBase,
+      mcpMessageEndpoint: `${backendBase}/mcp/message`,
+      mcpSseEndpoint: `${backendBase}/mcp/sse`,
+      specVersion: "2025-11-25"
+    };
+
+    let state = {
+      isOfflineMode: false,
+      isListening: false,
+      isSpeaking: false,
+      speechRecognition: null,
+      activeSessionId: null,
+      messageCounter: 0,
+      activeTab: "conv"
+    };
+
+    // Pre-Canned Realistic Responses for Offline Demo Mode
+    const OFFLINE_FIXTURES = {
+      health: {
+        toolName: "get_service_health",
+        request: {
+          jsonrpc: "2.0",
+          id: "req-01",
+          method: "tools/call",
+          params: {
+            name: "get_service_health",
+            arguments: { service_name: "payments-service" }
+          }
+        },
+        response: {
+          jsonrpc: "2.0",
+          id: "req-01",
+          result: {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  service_name: "payments-service",
+                  status: "DEGRADED",
+                  latency_p99_ms: 1420.5,
+                  latency_p50_ms: 118.4,
+                  cpu_utilization_pct: 89.2,
+                  memory_utilization_pct: 76.5,
+                  error_rate_pct: 14.8,
+                  active_replicas: 12,
+                  desired_replicas: 16,
+                  target_group_health: "4_UNHEALTHY_12_HEALTHY",
+                  current_version: "v2.5.0-canary",
+                  timestamp: new Date().toISOString(),
+                  environment: "production",
+                  details: "High HTTP 504 Gateway Timeout rate detected on /v1/charges downstream endpoint."
+                }, null, 2)
+              }
+            ],
+            isError: false
+          }
+        },
+        speechText: "I've checked payments-service. The service is currently DEGRADED with a 99th percentile latency of 1,420 milliseconds and a 14.8% error rate. 4 target instances are reporting unhealthy due to downstream 504 timeouts."
+      },
+
+      analyze: {
+        toolName: "analyze_incident_log",
+        request: {
+          jsonrpc: "2.0",
+          id: "req-02",
+          method: "tools/call",
+          params: {
+            name: "analyze_incident_log",
+            arguments: {
+              service_name: "payments-service",
+              log_trace: "2026-09-29T14:10:02Z [ERROR] HTTP 504 Gateway Timeout: HikariPool-1 connection not available, timed out after 30005ms."
+            }
+          }
+        },
+        response: {
+          jsonrpc: "2.0",
+          id: "req-02",
+          result: {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  provider: "Amazon Bedrock (anthropic.claude-3-5-sonnet-20240620-v1:0)",
+                  model_id: "anthropic.claude-3-5-sonnet-20240620-v1:0",
+                  severity: "SEV-1 (Critical)",
+                  root_cause_summary: "Downstream database connection pool starvation (HikariPool-1). Worker threads exhausted waiting for connection leases, causing cascading 504 Gateway Timeouts.",
+                  impact_assessment: "Customer checkout transactions failing. P99 latency breached SLA threshold (>1,400ms).",
+                  remediation_playbook: [
+                    "1. Trigger emergency canary rollback of payments-service to stable version v2.4.1.",
+                    "2. Route traffic away from degraded canary replicas in AWS ALB Target Group.",
+                    "3. Increase maximum connection pool capacity and idle timeout in RDS Proxy.",
+                    "4. Monitor CloudWatch HTTPCode_Target_5XX_Count until error rate drops below 0.05%."
+                  ],
+                  suggested_action: "trigger_rollback(service_name='payments-service', target_version='v2.4.1')",
+                  timestamp: new Date().toISOString()
+                }, null, 2)
+              }
+            ],
+            isError: false
+          }
+        },
+        speechText: "Amazon Bedrock Claude 3.5 Sonnet has diagnosed the incident as a SEV-1 Critical failure. The root cause is database connection pool starvation causing cascading 504 timeouts. I recommend immediately rolling back payments-service to version v2.4.1."
+      },
+
+      rollback: {
+        toolName: "trigger_rollback",
+        request: {
+          jsonrpc: "2.0",
+          id: "req-03",
+          method: "tools/call",
+          params: {
+            name: "trigger_rollback",
+            arguments: {
+              service_name: "payments-service",
+              target_version: "v2.4.1",
+              reason: "Automated remediation triggered via Alexa+ SRE Cockpit"
+            }
+          }
+        },
+        response: {
+          jsonrpc: "2.0",
+          id: "req-03",
+          result: {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  status: "SUCCESS",
+                  service_name: "payments-service",
+                  target_version: "v2.4.1",
+                  previous_version: "v2.5.0-canary",
+                  rollback_id: "rb-982e41",
+                  duration_seconds: 3.8,
+                  execution_logs: [
+                    "[00:00.102] Shifting ALB weighted routing: Canary 10% -> 0%, Stable 90% -> 100%.",
+                    "[00:00.920] Reverting active ECS task definition to payments-service:v2.4.1.",
+                    "[00:01.580] Gracefully draining connections from 4 unhealthy canary tasks.",
+                    "[00:02.980] CloudWatch synthetic verification probes returning HTTP 200 OK (p99 38ms).",
+                    "[00:03.800] Rollback finalized. Audit event emitted to AWS EventBridge."
+                  ],
+                  timestamp: new Date().toISOString()
+                }, null, 2)
+              }
+            ],
+            isError: false
+          }
+        },
+        speechText: "Emergency rollback initiated. ALB traffic shifted 100% to version v2.4.1. Unhealthy canary containers drained, and synthetic probes are now passing at 38 milliseconds latency."
+      }
+    };
+
+    // ========================================================================
+    // Voice Recognition (Web Speech API)
+    // ========================================================================
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.warn("Web Speech Recognition API is not supported in this browser.");
+        return;
+      }
+
+      state.speechRecognition = new SpeechRecognition();
+      state.speechRecognition.continuous = false;
+      state.speechRecognition.interimResults = true;
+      state.speechRecognition.lang = "en-US";
+
+      state.speechRecognition.onstart = () => {
+        state.isListening = true;
+        setOrbState("listening");
+        document.getElementById("mic-btn").classList.add("recording");
+        updateVerbalTranscript("Listening to your voice...", "Speak clearly into your microphone");
+      };
+
+      state.speechRecognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        document.getElementById("query-input").value = transcript;
+        updateVerbalTranscript(`"${transcript}"`, "Transcribing in real time...");
+      };
+
+      state.speechRecognition.onerror = (event) => {
+        console.warn("Speech recognition error:", event.error);
+        stopListening();
+        showToast(`Microphone error: ${event.error}`);
+      };
+
+      state.speechRecognition.onend = () => {
+        stopListening();
+        const query = document.getElementById("query-input").value.trim();
+        if (query) {
+          processVoiceCommand(query);
+        }
+      };
+    }
+
+    function toggleVoiceDictation() {
+      if (!state.speechRecognition) {
+        initSpeechRecognition();
+      }
+      if (!state.speechRecognition) {
+        showToast("Speech recognition not supported in this browser. Please type below.");
+        document.getElementById("query-input").focus();
+        return;
+      }
+
+      if (state.isListening) {
+        state.speechRecognition.stop();
+        stopListening();
+      } else {
+        // Cancel any active speech synthesis
+        window.speechSynthesis.cancel();
+        try {
+          state.speechRecognition.start();
+        } catch (e) {
+          console.warn("Recognition already started:", e);
+        }
+      }
+    }
+
+    function stopListening() {
+      state.isListening = false;
+      document.getElementById("mic-btn").classList.remove("recording");
+      if (!state.isSpeaking) {
+        setOrbState("idle");
+      }
+    }
+
+    // ========================================================================
+    // Speech Synthesis (Alexa Voice Output)
+    // ========================================================================
+    function speakAlexaResponse(text, onComplete) {
+      const ttsToggle = document.getElementById("tts-toggle");
+      if (!ttsToggle.checked || !('speechSynthesis' in window)) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      window.speechSynthesis.cancel(); // Stop prior audio
+      const cleanText = text
+        .replace(/[*_#`]/g, '')
+        .replace(/p99/gi, 'p 99')
+        .replace(/SEV-1/gi, 'Severity 1')
+        .replace(/v(\d+)\.(\d+)\.(\d+)/g, 'version $1 point $2 point $3');
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+
+      // Select female/natural English voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Samantha") || v.name.includes("Jenny") || v.name.includes("Female")));
+      if (preferred) {
+        utterance.voice = preferred;
+      }
+
+      utterance.onstart = () => {
+        state.isSpeaking = true;
+        setOrbState("speaking");
+      };
+
+      utterance.onend = () => {
+        state.isSpeaking = false;
+        setOrbState("idle");
+        if (onComplete) onComplete();
+      };
+
+      utterance.onerror = () => {
+        state.isSpeaking = false;
+        setOrbState("idle");
+        if (onComplete) onComplete();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // ========================================================================
+    // Visual Orb Controller
+    // ========================================================================
+    function setOrbState(status) {
+      const orb = document.getElementById("alexa-orb");
+      const label = document.getElementById("orb-state-label");
+      orb.className = `alexa-orb-wrapper orb-state-${status}`;
+      label.textContent = status.toUpperCase();
+    }
+
+    function updateVerbalTranscript(mainText, hintText) {
+      document.getElementById("verbal-transcript").textContent = mainText;
+      if (hintText) {
+        document.getElementById("transcript-hint").textContent = hintText;
+      }
+    }
+
+    // ========================================================================
+    // Command Processing & Protocol Dispatcher
+    // ========================================================================
+    function handleInputSubmit() {
+      const input = document.getElementById("query-input");
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+      processVoiceCommand(text);
+    }
+
+    function triggerPreset(presetKey) {
+      if (presetKey === "health") {
+        processVoiceCommand("Alexa, check health for payments-service");
+      } else if (presetKey === "analyze") {
+        processVoiceCommand("Alexa, analyze the latest timeout incident log");
+      } else if (presetKey === "rollback") {
+        processVoiceCommand("Alexa, rollback payments-service to version v2.4.1");
+      } else if (presetKey === "antigravity") {
+        processVoiceCommand("Alexa, import antigravity");
+      }
+    }
+
+    async function processVoiceCommand(commandText) {
+      state.messageCounter++;
+      const lower = commandText.toLowerCase();
+
+      // Easter Egg Check
+      if (lower.includes("antigravity")) {
+        executeAntigravityEasterEgg();
+        return;
+      }
+
+      // Add user message to conversation stream
+      appendChatBubble("user", commandText);
+      updateVerbalTranscript(`"${commandText}"`, "Dispatching MCP tool call via Streamable HTTP (2025-11-25)...");
+
+      // Switch orb to THINKING
+      setOrbState("thinking");
+
+      // Determine matching tool
+      let toolName = "get_service_health";
+      let args = { service_name: "payments-service" };
+      let fixtureKey = "health";
+
+      if (lower.includes("analyze") || lower.includes("log") || lower.includes("timeout") || lower.includes("stack")) {
+        toolName = "analyze_incident_log";
+        args = {
+          service_name: "payments-service",
+          log_trace: "HTTP 504 Gateway Timeout downstream. HikariPool-1 connection not available, timed out after 30005ms."
+        };
+        fixtureKey = "analyze";
+      } else if (lower.includes("rollback") || lower.includes("revert")) {
+        toolName = "trigger_rollback";
+        args = {
+          service_name: "payments-service",
+          target_version: "v2.4.1",
+          reason: "Automated emergency canary rollback triggered via Alexa+"
+        };
+        fixtureKey = "rollback";
+      }
+
+      // Build JSON-RPC 2.0 Payload
+      const jsonRpcPayload = {
+        jsonrpc: "2.0",
+        id: `alexa-mcp-${state.messageCounter}`,
+        method: "tools/call",
+        params: {
+          name: toolName,
+          arguments: args
+        }
+      };
+
+      // Display in Protocol Telemetry Inspector
+      displayJsonRpcRequest(jsonRpcPayload);
+
+      const t0 = performance.now();
+
+      // Execute: Try real backend, or fallback to offline mode if offline or selected
+      let resultData = null;
+      let speechText = "";
+
+      if (!state.isOfflineMode) {
+        try {
+          const response = await fetch(CONFIG.mcpMessageEndpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json, text/event-stream",
+              "MCP-Protocol-Version": CONFIG.specVersion
+            },
+            body: JSON.stringify(jsonRpcPayload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status} from MCP server`);
+          }
+
+          resultData = await response.json();
+          const latency = Math.round(performance.now() - t0);
+          document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-emerald);">${latency} ms</strong>`;
+          
+          // Parse structured tool response
+          const toolContentRaw = resultData?.result?.content?.[0]?.text;
+          const parsed = toolContentRaw ? JSON.parse(toolContentRaw) : resultData;
+          speechText = generateSpeechFromParsedTool(toolName, parsed);
+
+        } catch (netErr) {
+          console.warn("Backend offline or request failed, falling back to simulated fixture:", netErr);
+          showToast("Live server unreachable: Using High-Fidelity Simulation");
+          resultData = OFFLINE_FIXTURES[fixtureKey].response;
+          speechText = OFFLINE_FIXTURES[fixtureKey].speechText;
+          document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-amber);">Simulated 42ms</strong>`;
+        }
+      } else {
+        // Offline demo mode active
+        await new Promise(r => setTimeout(r, 600)); // realistic thinking delay
+        resultData = OFFLINE_FIXTURES[fixtureKey].response;
+        speechText = OFFLINE_FIXTURES[fixtureKey].speechText;
+        document.getElementById("telemetry-timing").innerHTML = `Latency: <strong style="color: var(--status-amber);">Offline Demo (38ms)</strong>`;
+      }
+
+      // Display response in Telemetry panel
+      displayJsonRpcResponse(resultData);
+
+      // Render Alexa bubble in chat stream
+      appendAlexaResponseCard(toolName, resultData, speechText);
+
+      // Update Verbal Transcript & Speak Aloud
+      updateVerbalTranscript(`Alexa: "${speechText}"`, "Speech synthesis playing...");
+      speakAlexaResponse(speechText);
+    }
+
+    function generateSpeechFromParsedTool(toolName, data) {
+      if (toolName === "get_service_health") {
+        return `I've checked ${data.service_name || 'payments-service'}. Status is ${data.status} with a p99 latency of ${data.latency_p99_ms} milliseconds and ${data.error_rate_pct}% errors.`;
+      } else if (toolName === "analyze_incident_log") {
+        return `Amazon Bedrock Claude 3.5 Sonnet identified a ${data.severity || 'SEV-1 Critical'} incident. Root cause: connection pool exhaustion. Recommendation: trigger rollback to version v2.4.1.`;
+      } else if (toolName === "trigger_rollback") {
+        return `Canary rollback completed successfully. Traffic shifted 100% to version ${data.target_version || 'v2.4.1'}, and synthetic health checks are green.`;
+      }
+      return "MCP tool execution completed successfully.";
+    }
+
+    // ========================================================================
+    // Easter Egg: "Alexa, import antigravity"
+    // ========================================================================
+    function executeAntigravityEasterEgg() {
+      appendChatBubble("user", "Alexa, import antigravity");
+      setOrbState("antigravity");
+      
+      const easterText = "Python 3.14: Antigravity initialized! Trajectory: Geostationary orbit. 'I wrote 20 lines of Python code and now I'm flying!'";
+      updateVerbalTranscript("Alexa: " + easterText, "Python XKCD Easter egg activated!");
+      
+      const payload = {
+        jsonrpc: "2.0",
+        id: "easter-egg-01",
+        method: "tools/call",
+        params: {
+          name: "import_antigravity",
+          arguments: { altitude_km: 35786, language: "python3" }
+        }
+      };
+
+      const result = {
+        jsonrpc: "2.0",
+        id: "easter-egg-01",
+        result: {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              easter_egg: "antigravity.py",
+              quote: "I wrote 20 lines of code and now I'm flying!",
+              status: "LEVITATING",
+              altitude: "35,786 km",
+              easter_egg_url: "https://xkcd.com/353/"
+            }, null, 2)
+          }],
+          isError: false
+        }
+      };
+
+      displayJsonRpcRequest(payload);
+      displayJsonRpcResponse(result);
+
+      // Append fun chat bubble
+      const stream = document.getElementById("chat-stream");
+      const msg = document.createElement("div");
+      msg.className = "chat-msg alexa";
+      msg.innerHTML = `
+        <div class="msg-header">
+          <span style="color: var(--status-emerald); font-weight: 700;">Alexa+ Easter Egg</span>
+          <span>• Antigravity Engine</span>
+        </div>
+        <div class="msg-bubble" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.4);">
+          🚀 <strong>Antigravity module loaded!</strong> The Alexa+ orb has engaged gravity neutralization fields.<br>
+          <em style="color: #94a3b8;">"I wrote 20 lines of code and now I'm flying!"</em> — Python / XKCD 353
+        </div>
+      `;
+      stream.appendChild(msg);
+      stream.scrollTop = stream.scrollHeight;
+
+      speakAlexaResponse(easterText, () => {
+        setTimeout(() => setOrbState("idle"), 2500);
+      });
+    }
+
+    // ========================================================================
+    // UI Renderers & Telemetry Visualizers
+    // ========================================================================
+    function appendChatBubble(role, text) {
+      const stream = document.getElementById("chat-stream");
+      const msg = document.createElement("div");
+      msg.className = `chat-msg ${role}`;
+      msg.innerHTML = `
+        <div class="msg-header">
+          <span>${role === 'user' ? 'Operator' : 'Alexa+ SRE Copilot'}</span>
+          <span>• ${new Date().toLocaleTimeString()}</span>
+        </div>
+        <div class="msg-bubble">${escapeHtml(text)}</div>
+      `;
+      stream.appendChild(msg);
+      stream.scrollTop = stream.scrollHeight;
+      updateChatCount();
+    }
+
+    function appendAlexaResponseCard(toolName, resultData, speechSummary) {
+      const stream = document.getElementById("chat-stream");
+      const msg = document.createElement("div");
+      msg.className = "chat-msg alexa";
+
+      const toolRaw = resultData?.result?.content?.[0]?.text;
+      let cardHtml = "";
+
+      if (toolRaw) {
+        try {
+          const d = JSON.parse(toolRaw);
+          if (toolName === "get_service_health") {
+            const isDegraded = d.status !== "HEALTHY";
+            cardHtml = `
+              <div class="structured-card ${isDegraded ? 'critical' : 'success'}">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="font-size: 0.95rem;">${d.service_name}</strong>
+                  <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: ${isDegraded ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${isDegraded ? 'var(--status-crimson)' : 'var(--status-emerald)'}; font-weight: 700;">
+                    ${d.status}
+                  </span>
+                </div>
+                <div class="telemetry-row">
+                  <div class="telemetry-col"><span class="telemetry-label">p99 Latency</span><span class="telemetry-value" style="color: ${d.latency_p99_ms > 800 ? 'var(--status-crimson)' : 'var(--status-emerald)'}">${d.latency_p99_ms}ms</span></div>
+                  <div class="telemetry-col"><span class="telemetry-label">Error Rate</span><span class="telemetry-value" style="color: ${d.error_rate_pct > 5 ? 'var(--status-crimson)' : 'var(--status-emerald)'}">${d.error_rate_pct}%</span></div>
+                  <div class="telemetry-col"><span class="telemetry-label">CPU / Mem</span><span class="telemetry-value">${d.cpu_utilization_pct}%</span></div>
+                  <div class="telemetry-col"><span class="telemetry-label">Replicas</span><span class="telemetry-value">${d.active_replicas}/${d.desired_replicas}</span></div>
+                </div>
+                <div style="font-size: 0.76rem; color: #94a3b8;">${d.details}</div>
+              </div>
+            `;
+          } else if (toolName === "analyze_incident_log") {
+            cardHtml = `
+              <div class="structured-card critical">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #fca5a5;">${d.severity} Diagnostic</strong>
+                  <span style="font-size: 0.72rem; color: #f59e0b;">${d.model_id || 'Claude 3.5 Sonnet'}</span>
+                </div>
+                <div style="font-size: 0.8rem; line-height: 1.5; color: #e2e8f0;">
+                  <strong>Root Cause:</strong> ${d.root_cause_summary}
+                </div>
+                <div style="font-size: 0.76rem; color: #cbd5e1; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
+                  <strong>Remediation Playbook:</strong><br>
+                  ${(d.remediation_playbook || []).join('<br>')}
+                </div>
+              </div>
+            `;
+          } else if (toolName === "trigger_rollback") {
+            cardHtml = `
+              <div class="structured-card success">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: var(--status-emerald);">Rollback Succeeded</strong>
+                  <span style="font-size: 0.72rem; color: #94a3b8;">ID: ${d.rollback_id}</span>
+                </div>
+                <div style="font-size: 0.78rem; color: #cbd5e1;">
+                  Reverted <strong>${d.service_name}</strong> from <code>${d.previous_version}</code> to <code>${d.target_version}</code> in ${d.duration_seconds}s.
+                </div>
+                <div style="font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: #94a3b8; background: #000; padding: 8px; border-radius: 6px; max-height: 100px; overflow-y: auto;">
+                  ${(d.execution_logs || []).join('<br>')}
+                </div>
+              </div>
+            `;
+          }
+        } catch (e) {
+          // Fall back to plain text
+        }
+      }
+
+      msg.innerHTML = `
+        <div class="msg-header">
+          <span style="color: var(--alexa-cyan); font-weight: 700;">Alexa+ SRE Copilot</span>
+          <span>• ${new Date().toLocaleTimeString()}</span>
+        </div>
+        <div class="msg-bubble">
+          ${speechSummary}
+          ${cardHtml}
+        </div>
+      `;
+
+      stream.appendChild(msg);
+      stream.scrollTop = stream.scrollHeight;
+      updateChatCount();
+    }
+
+    function updateChatCount() {
+      const count = document.getElementById("chat-stream").children.length;
+      document.getElementById("conv-count").textContent = count;
+    }
+
+    function displayJsonRpcRequest(payload) {
+      document.getElementById("telemetry-method-tag").textContent = `METHOD: ${payload.method} (${payload.params?.name || ''})`;
+      document.getElementById("jsonrpc-req-viewer").innerHTML = syntaxHighlightJson(JSON.stringify(payload, null, 2));
+      document.getElementById("mcp-count").textContent = state.messageCounter;
+    }
+
+    function displayJsonRpcResponse(payload) {
+      document.getElementById("jsonrpc-res-viewer").innerHTML = syntaxHighlightJson(JSON.stringify(payload, null, 2));
+    }
+
+    function syntaxHighlightJson(jsonStr) {
+      jsonStr = escapeHtml(jsonStr);
+      return jsonStr.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'json-num';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'json-key';
+          } else {
+            cls = 'json-str';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'json-bool';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // ========================================================================
+    // Navigation & Deck Tab Controller
+    // ========================================================================
+    function selectTab(tabKey) {
+      state.activeTab = tabKey;
+      document.getElementById("tab-conv-btn").classList.toggle("active", tabKey === "conv");
+      document.getElementById("tab-telemetry-btn").classList.toggle("active", tabKey === "telemetry");
+      document.getElementById("pane-conv").classList.toggle("active", tabKey === "conv");
+      document.getElementById("pane-telemetry").classList.toggle("active", tabKey === "telemetry");
+    }
+
+    function clearLogs() {
+      document.getElementById("chat-stream").innerHTML = "";
+      document.getElementById("jsonrpc-req-viewer").textContent = "// Cleared. Waiting for next tool execution...";
+      document.getElementById("jsonrpc-res-viewer").textContent = "// Cleared.";
+      state.messageCounter = 0;
+      updateChatCount();
+      document.getElementById("mcp-count").textContent = "0";
+      showToast("Logs and conversation cleared");
+    }
+
+    function copyCode(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("JSON payload copied to clipboard");
+      }).catch(err => {
+        showToast("Copy failed: " + err);
+      });
+    }
+
+    function toggleOfflineMode() {
+      state.isOfflineMode = !state.isOfflineMode;
+      const sw = document.getElementById("offline-switch");
+      const dot = document.getElementById("mcp-dot");
+      const text = document.getElementById("mcp-status-text");
+
+      sw.classList.toggle("active", state.isOfflineMode);
+      if (state.isOfflineMode) {
+        dot.classList.add("offline");
+        text.textContent = "Offline Demo Mode Active (Simulated Streamable HTTP)";
+        showToast("Offline Demo Mode: ON (Safe for offline demo recording)");
+      } else {
+        dot.classList.remove("offline");
+        text.textContent = "Connected to MCP Server: Streamable HTTP (2025-11-25)";
+        checkBackendHealth();
+        showToast("Connecting to live local MCP backend...");
+      }
+    }
+
+    async function checkBackendHealth() {
+      const dot = document.getElementById("mcp-dot");
+      const text = document.getElementById("mcp-status-text");
+
+      try {
+        const res = await fetch(`${CONFIG.backendBase}/health`, { signal: AbortSignal.timeout(2000) });
+        if (res.ok) {
+          dot.classList.remove("offline");
+          text.textContent = "Connected to MCP Server: Streamable HTTP (2025-11-25)";
+          showToast("Connected to live backend on port 8000!");
+        } else {
+          throw new Error("Non-200 response");
+        }
+      } catch (err) {
+        dot.classList.add("offline");
+        text.textContent = "MCP Server: Offline (Toggle 'Offline Demo Mode' to simulate)";
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("cockpit-toast");
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 3200);
+    }
+
+    // ========================================================================
+    // Lifecycle Bootstrap
+    // ========================================================================
+    window.addEventListener("DOMContentLoaded", () => {
+      // Warm up voices
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+      }
+
+      // Update target endpoint label
+      const targetLabel = document.getElementById("target-endpoint-label");
+      if (targetLabel) targetLabel.textContent = `${CONFIG.backendBase}/mcp`;
+
+      // Check backend connectivity
+      checkBackendHealth();
+
+      // Enter key handler for input
+      document.getElementById("query-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          handleInputSubmit();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
