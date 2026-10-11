@@ -183,9 +183,19 @@ def test_service_rollback_state_mutation():
     """Requirement 4: Service rollback state mutation (payments-service DEGRADED -> HEALTHY)."""
     print_section("4. Service Rollback State Mutation (payments-service DEGRADED -> HEALTHY)")
 
-    # Step 1: Verify pre-condition: payments-service is DEGRADED
+    # Step 1: Verify pre-condition: ensure payments-service is DEGRADED (idempotent across repeated test runs)
     print("-> Checking baseline health of 'payments-service' ...")
     pre_health = request_json(f"{BASE_URL}/api/health/payments-service")
+    if pre_health.get("status") != "DEGRADED":
+        print("   Status is currently HEALTHY; injecting simulated chaos fault to test rollback...")
+        request_json(f"{BASE_URL}/api/chaos/inject", method="POST", payload={
+            "service_name": "payments-service",
+            "fault_type": "504_GATEWAY_TIMEOUT",
+            "latency_ms": 1420.5,
+            "error_rate_pct": 14.8
+        })
+        pre_health = request_json(f"{BASE_URL}/api/health/payments-service")
+
     print(f"   Baseline Status: {pre_health['status']}")
     print(f"   Baseline p99 Latency: {pre_health['latency_p99_ms']}ms")
     print(f"   Baseline Error Rate: {pre_health['error_rate_pct']}%")

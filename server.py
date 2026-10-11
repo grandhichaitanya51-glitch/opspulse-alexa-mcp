@@ -1003,6 +1003,28 @@ async def api_analyze_incident_log(body: AnalyzeIncidentRequest):
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+@app.post("/api/chaos/inject", response_model=ChaosInjectResponse, tags=["SRE Chaos Engineering"])
+async def api_inject_chaos(body: ChaosInjectRequest):
+    """Simulate infrastructure degradation on a microservice for chaos engineering and demo testing."""
+    clean_name = body.service_name.strip().lower()
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    if clean_name in SERVICE_CATALOG:
+        SERVICE_CATALOG[clean_name]["status"] = "DEGRADED"
+        SERVICE_CATALOG[clean_name]["latency_p99_ms"] = body.latency_ms or 1420.5
+        SERVICE_CATALOG[clean_name]["error_rate_pct"] = body.error_rate_pct or 14.8
+        SERVICE_CATALOG[clean_name]["current_version"] = "v2.5.0-canary"
+        SERVICE_CATALOG[clean_name]["target_group_health"] = "4_UNHEALTHY_12_HEALTHY"
+        SERVICE_CATALOG[clean_name]["details"] = f"Injected simulated fault: {body.fault_type}. High HTTP 504 timeouts."
+
+    return ChaosInjectResponse(
+        status="INJECTED",
+        service_name=clean_name,
+        fault_type=body.fault_type,
+        details=f"Injected {body.fault_type} into {clean_name}. p99 latency spiked to {body.latency_ms}ms, error rate {body.error_rate_pct}%.",
+        timestamp=now_iso,
+    )
+
+
 # -----------------------------------------------------------------------------
 # CLI Entry Point
 # -----------------------------------------------------------------------------
