@@ -19,7 +19,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code into container
-COPY server.py index.html README.md test_client.py .env.example ./
+COPY server.py index.html README.md test_client.py .env.example DEVPOST_SUBMISSION.md FRICTION_LOG.md ./
 
 # Expose the MCP Streamable HTTP / SSE port
 EXPOSE 8000
